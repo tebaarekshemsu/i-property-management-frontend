@@ -1,71 +1,84 @@
-"use client"; // Ensure this runs on the client side in Next.js (for App Router)
+"use client"
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react"
+import { Logo } from "../../public/Logo"
+import {
+  Menubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+  MenubarCheckboxItem,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+} from "./header/Menubar"
+import { Button } from "./button"
+import { MobileMenu } from "./header/MobileMenu"
 
-export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+export function Header() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
-  return (
-    <nav className="bg-white shadow fixed
-w-full">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <Link
-          className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text"
-          href="/"
-        >
-          DevMeetup
-        </Link>
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false)
+      }
+    }
 
-        {/* Desktop Menu */}
-        <div className="hidden sm:flex space-x-4 items-center">
-          <NavLinks />
-        </div>
+    document.addEventListener("keydown", handleEscape)
 
-        {/* Mobile Menu Button */}
-        <button
-          className="sm:hidden focus:outline-none"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-            />
-          </svg>
-        </button>
-      </div>
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [])
 
-      {/* Mobile Menu Dropdown */}
-      {isOpen && (
-        <div className="sm:hidden flex flex-col items-center space-y-2 pb-4">
-          <NavLinks />
-        </div>
-      )}
-    </nav>
-  );
-}
+  const menuItems = (
+    <Menubar>
+      <MenubarMenu>
+      File
+      </MenubarMenu>
+      <MenubarMenu>
+        Edit
+      </MenubarMenu>
+      <MenubarMenu>
+        View
+      </MenubarMenu>
+      <MenubarMenu>
+        Profiles
+      </MenubarMenu>
+    </Menubar>
+  )
 
-// Extracted NavLinks Component for Reusability
-function NavLinks() {
+  const mobileMenuItems = (
+    <div className="flex flex-col space-y-4">
+      <Button variant="ghost">File</Button>
+      <Button variant="ghost">Edit</Button>
+      <Button variant="ghost">View</Button>
+      <Button variant="ghost">Profiles</Button>
+    </div>
+  )
+
   return (
     <>
-      <Link className="nav-link" href="/">Home</Link>
-      <Link className="nav-link" href="/v1">V1</Link>
-      <Link className="nav-link" href="/v2">V2</Link>
-      <Link className="nav-link" href="/about-us">About Us</Link>
-      <Link className="nav-link" href="/contact-us">Contact Us</Link>
-      <Link className="nav-link" href="/sponsor-us">Sponsor Us</Link>
-      <Link className="nav-link" href="/help-us">Help Us</Link>
+      <div className="flex justify-between items-center px-4 py-2 bg-white shadow-md fixed top-0 left-0 w-full z-50" style={{ height: '64px' }}>
+        <div className="flex items-center">
+          <Logo />
+        </div>
+        <div className="max-[799px]:hidden">{menuItems}</div>
+        <div className="min-[800px]:hidden">
+          <Button variant="ghost" onClick={() => setIsMobileMenuOpen(true)}>
+            Menu
+          </Button>
+        </div>
+      </div>
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)}>
+        {mobileMenuItems}
+      </MobileMenu>
+      <div style={{ marginTop: '64px' }}>
+        {/* Your other content goes here */}
+      </div>
     </>
-  );
+  )
 }
+

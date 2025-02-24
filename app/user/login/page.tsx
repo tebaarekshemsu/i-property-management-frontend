@@ -2,7 +2,7 @@ import Form from 'next/form'
 
 export default function Page() {
   return (
-    <Form action="/search">
+    <Form action=''>
       <input name="query" className='border'/>
       <button type="submit">Submit</button>
     </Form>
