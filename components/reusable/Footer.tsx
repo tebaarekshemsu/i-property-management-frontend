@@ -36,8 +36,8 @@ export default function Footer() {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <p className="text-gray-300">123 Main St, Anytown, USA 12345</p>
-            <p className="text-gray-300">Phone: (123) 456-7890</p>
+            <p className="text-gray-300">123 Main St, AA, ETH 12345</p>
+            <p className="text-gray-300">Phone: (251) 456-7890</p>
             <p className="text-gray-300">Email: info@homerentalcompany.com</p>
           </div>
         </div>

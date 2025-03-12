@@ -1,17 +1,11 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Logo } from "../../public/Logo"
 import {
   Menubar,
   MenubarMenu,
-  MenubarTrigger,
-  MenubarContent,
-  MenubarItem,
-  MenubarSeparator,
-  MenubarCheckboxItem,
-  MenubarRadioGroup,
-  MenubarRadioItem,
 } from "./header/Menubar"
 import { Button } from "./button"
 import { MobileMenu } from "./header/MobileMenu"
@@ -35,27 +29,48 @@ export function Header() {
 
   const menuItems = (
     <Menubar>
+<Link href="/house">
       <MenubarMenu>
-      File
+      House
       </MenubarMenu>
+      </Link>
+
+      <Link href="/house">
+
       <MenubarMenu>
-        Edit
+        Contact
       </MenubarMenu>
+      </Link>
+      <Link href="/user/login">
+
       <MenubarMenu>
-        View
+        Login/Signup
       </MenubarMenu>
+      </Link>
+      <Link href="/user">
+
       <MenubarMenu>
         Profiles
       </MenubarMenu>
+      </Link>
     </Menubar>
   )
 
   const mobileMenuItems = (
     <div className="flex flex-col space-y-4">
-      <Button variant="ghost">File</Button>
-      <Button variant="ghost">Edit</Button>
-      <Button variant="ghost">View</Button>
+            <Link href="/house">
+
+      <Button variant="ghost">House</Button>
+      </Link>
+      <Link href="/house">
+      <Button variant="ghost">Contact</Button>
+      </Link>
+      <Link href="/user/login">
+      <Button variant="ghost">Login/Signup</Button>
+      </Link>
+      <Link href="/user">
       <Button variant="ghost">Profiles</Button>
+      </Link>
     </div>
   )
 
@@ -63,7 +78,7 @@ export function Header() {
     <>
       <div className="flex justify-between items-center px-4 py-2 bg-white shadow-md fixed top-0 left-0 w-full z-50" style={{ height: '64px' }}>
         <div className="flex items-center">
-          <Logo />
+          <Link href="/"><Logo /></Link>
         </div>
         <div className="max-[799px]:hidden">{menuItems}</div>
         <div className="min-[800px]:hidden">
