@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { SearchBar } from "@/components/Listing/SearchBar"
-import { FilterSection } from "@/components/Listing/FilterSection"
-import { HouseCard } from "@/components/Listing/HouseCard"
-import { Pagination } from "@/components/Listing/Pagination"
+import { useState } from "react";
+import { SearchBar } from "@/components/Listing/SearchBar";
+import { FilterSection } from "@/components/Listing/FilterSection";
+import { HouseCard } from "@/components/Listing/HouseCard";
+import { Pagination } from "@/components/Listing/Pagination";
 
 const houses = Array.from({ length: 50 }, (_, i) => ({
   id: `${i + 1}`,
@@ -17,30 +17,33 @@ const houses = Array.from({ length: 50 }, (_, i) => ({
   bedrooms: Math.floor(Math.random() * 5) + 1,
   bathrooms: Math.floor(Math.random() * 3) + 1,
   location: "City Center",
-}))
+}));
 
 export default function HouseListingPage() {
   // State for pagination
-  const [currentPage, setCurrentPage] = useState(1)
-  const housesPerPage = 9
+  const [currentPage, setCurrentPage] = useState(1);
+  const housesPerPage = 9;
 
   // State for filtering by type; default is "rent"
-  const [filterType, setFilterType] = useState<"rent" | "sell">("rent")
+  const [filterType, setFilterType] = useState<"rent" | "sell">("rent");
 
   // Filter houses based on the filterType
-  const filteredHouses = houses.filter((house) => house.type === filterType)
+  const filteredHouses = houses.filter((house) => house.type === filterType);
 
   // Calculate pagination after filtering
-  const totalPages = Math.ceil(filteredHouses.length / housesPerPage)
-  const indexOfLastHouse = currentPage * housesPerPage
-  const indexOfFirstHouse = indexOfLastHouse - housesPerPage
-  const currentHouses = filteredHouses.slice(indexOfFirstHouse, indexOfLastHouse)
+  const totalPages = Math.ceil(filteredHouses.length / housesPerPage);
+  const indexOfLastHouse = currentPage * housesPerPage;
+  const indexOfFirstHouse = indexOfLastHouse - housesPerPage;
+  const currentHouses = filteredHouses.slice(
+    indexOfFirstHouse,
+    indexOfLastHouse
+  );
 
   // Handle filter type change and reset pagination to page 1
   const handleFilterChange = (type: "rent" | "sell") => {
-    setFilterType(type)
-    setCurrentPage(1)
-  }
+    setFilterType(type);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -101,5 +104,5 @@ export default function HouseListingPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
