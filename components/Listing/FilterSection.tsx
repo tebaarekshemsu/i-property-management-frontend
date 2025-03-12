@@ -21,7 +21,6 @@ export function FilterSection() {
         overflow-y: auto;
         background-color: white;
         z-index: 10;
-        padding: 1rem;
         }
       }
     `}</style>

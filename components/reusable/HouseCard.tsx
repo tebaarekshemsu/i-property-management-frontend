@@ -1,3 +1,4 @@
+import Paths from "@/path"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -24,7 +25,7 @@ export function HouseCard({ id, name, price, description, imageUrl }: HouseCardP
         <p className="text-gray-600 mb-2">${price.toLocaleString()} / month</p>
         <p className="text-gray-500 mb-4">{description}</p>
         <Link
-          href={`/house/${id}`}
+          href={`${Paths.userHouseDetailPath(id)}`}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-block"
         >
           View Details

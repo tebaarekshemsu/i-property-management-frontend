@@ -32,7 +32,7 @@ export function AuthForm() {
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
       // Redirect to dashboard on success
-      router.push("/dashboard")
+      router.push("/user")
     } catch (err) {
       setError("Authentication failed. Please try again.")
     }
