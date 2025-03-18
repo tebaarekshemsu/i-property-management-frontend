@@ -1,17 +1,17 @@
-import Paths from "@/path"
-import Image from "next/image"
-import Link from "next/link"
+import Paths from "@/path";
+import Image from "next/image";
+import Link from "next/link";
 
 interface HouseCardProps {
-  id: string
-  name: string
-  price: number
-  description: string
-  imageUrl: string
-  type: "rent" | "sell"
-  bedrooms: number
-  bathrooms: number
-  location: string
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  imageUrl: string;
+  type: "rent" | "sell";
+  bedrooms: number;
+  bathrooms: number;
+  location: string;
 }
 
 export function HouseCard({
@@ -29,14 +29,21 @@ export function HouseCard({
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <div className="relative">
         <Image
-          src={imageUrl || "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"}
+          src={
+            imageUrl ||
+            "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+          }
           alt={name}
           width={400}
           height={200}
           className="w-full h-48 object-cover"
         />
         <div
-          className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${type === "rent" ? "bg-blue-500 text-white" : "bg-green-500 text-white"}`}
+          className={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs font-semibold ${
+            type === "rent"
+              ? "bg-blue-500 text-white"
+              : "bg-green-500 text-white"
+          }`}
         >
           {type === "rent" ? "For Rent" : "For Sale"}
         </div>
@@ -60,6 +67,5 @@ export function HouseCard({
         </Link>
       </div>
     </div>
-  )
+  );
 }
-

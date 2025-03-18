@@ -1,21 +1,30 @@
-import Paths from "@/path"
-import Image from "next/image"
-import Link from "next/link"
+import Paths from "@/path";
+import Image from "next/image";
+import Link from "next/link";
 
 interface HouseCardProps {
-  id: string
-  name: string
-  price: number
-  description: string
-  imageUrl: string
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  imageUrl: string;
 }
 
-export function HouseCard({ id, name, price, description, imageUrl }: HouseCardProps) {
+export function HouseCard({
+  id,
+  name,
+  price,
+  description,
+  imageUrl,
+}: HouseCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       <Image
-        src={imageUrl || "/placeholder.svg"}
-        alt={name}
+        src={
+          imageUrl ||
+          "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+        }
+        alt={name || "House image"}
         width={400}
         height={200}
         className="w-full h-48 object-cover"
@@ -32,6 +41,5 @@ export function HouseCard({ id, name, price, description, imageUrl }: HouseCardP
         </Link>
       </div>
     </div>
-  )
+  );
 }
-
