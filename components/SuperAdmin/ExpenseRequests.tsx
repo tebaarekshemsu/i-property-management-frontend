@@ -188,8 +188,8 @@ export function ExpenseRequests() {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full">
+      <div className="bg-white rounded-lg shadow overflow-x-scroll w-full">
+        <table className="w-full min-w-max boder-collapse">
           <thead>
             <tr className="bg-gray-100">
               <th className="py-3 px-4 text-left">{("title")}</th>

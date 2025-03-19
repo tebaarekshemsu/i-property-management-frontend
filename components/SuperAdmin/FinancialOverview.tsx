@@ -288,7 +288,7 @@ export function FinancialOverview() {
 
 function StatCard({ title, value, color }: { title: string; value: string; color: string }) {
   return (
-    <div className={`rounded-lg shadow p-6 ${color}`}>
+    <div className={`rounded-lg shadow p-6  ${color}`}>
       <p className="text-sm font-medium">{title}</p>
       <p className="text-2xl font-bold mt-2">{value}</p>
     </div>

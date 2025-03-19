@@ -1,6 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
-import Paths from "@/path"
+import Paths from "@/lib/path"
 export function HeroSection() {
   return (
     <div className="relative h-[70vh] flex items-center justify-center">

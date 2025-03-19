@@ -9,6 +9,7 @@ import {
 } from "./header/Menubar"
 import { Button } from "./button"
 import { MobileMenu } from "./header/MobileMenu"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -34,9 +35,7 @@ export function Header() {
       House
       </MenubarMenu>
       </Link>
-
       <Link href="/house">
-
       <MenubarMenu>
         Contact
       </MenubarMenu>
@@ -48,11 +47,13 @@ export function Header() {
       </MenubarMenu>
       </Link>
       <Link href="/user">
-
       <MenubarMenu>
         Profiles
       </MenubarMenu>
       </Link>
+    <MenubarMenu>
+      <LanguageSwitcher/>
+    </MenubarMenu>
     </Menubar>
   )
 
@@ -71,6 +72,7 @@ export function Header() {
       <Link href="/user">
       <Button variant="ghost">Profiles</Button>
       </Link>
+      <LanguageSwitcher/>
     </div>
   )
 

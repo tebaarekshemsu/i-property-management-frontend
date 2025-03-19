@@ -48,9 +48,7 @@ export default function HouseListingPage() {
       <header className="sticky top-0 z-20 bg-white shadow">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-3xl font-bold">House Listings</h1>
-          <div className="mt-4">
             <SearchBar />
-          </div>
           {/* Filter buttons for Rent and Sell */}
           <div className="mt-4 flex space-x-4">
             <button
@@ -81,7 +79,7 @@ export default function HouseListingPage() {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Filter Section */}
           <div className="md:w-1/4">
-            <div className="md:sticky md:top-[14rem] md:h-[calc(100vh-6rem)] overflow-y-auto">
+            <div className="md:sticky md:top-[1rem] md:h-[calc(100vh-16rem)] overflow-y-auto">
               <FilterSection />
             </div>
           </div>

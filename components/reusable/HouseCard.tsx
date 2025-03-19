@@ -1,4 +1,4 @@
-import Paths from "@/path"
+import Paths from "@/lib/path"
 import Image from "next/image"
 import Link from "next/link"
 

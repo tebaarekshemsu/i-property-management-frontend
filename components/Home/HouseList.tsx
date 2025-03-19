@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { HouseCard } from "../reusable/HouseCard"
-import Paths from "@/path"
+import Paths from "@/lib/path"
 
 const houses = [
   {
