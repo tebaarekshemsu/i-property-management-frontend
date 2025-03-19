@@ -23,9 +23,11 @@ export default async function RootLayout({
   const lang = (await cookieStore).get("lang")?.value || "en"
 
   return (
-    <html lang={lang} suppressHydrationWarning>
-      <body className={cn(inter.className, "min-h-screen bg-background")}>
-          <LanguageProvider lang={lang}>{children}</LanguageProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <div>{children}</div>
       </body>
     </html>
   )
