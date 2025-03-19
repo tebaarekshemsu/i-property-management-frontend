@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface HouseCardProps {
-  id: string;
+  house_id: string;
   name: string;
   price: number;
   description: string;
@@ -15,7 +15,7 @@ interface HouseCardProps {
 }
 
 export function HouseCard({
-  id,
+  house_id,
   name,
   price,
   description,
@@ -53,14 +53,17 @@ export function HouseCard({
         <p className="text-gray-600 mb-2">
           ${price.toLocaleString()} {type === "rent" ? "/ month" : ""}
         </p>
-        <p className="text-gray-500 mb-2">{description}</p>
+        <p className="text-gray-500 mb-2">
+          {description}
+          {house_id}
+        </p>
         <div className="flex justify-between text-sm text-gray-500 mb-4">
           <span>{bedrooms} bd</span>
           <span>{bathrooms} ba</span>
           <span>{location}</span>
         </div>
         <Link
-          href={`${Paths.userHouseDetailPath(id)}`}
+          href={`${Paths.userHouseDetailPath(house_id)}`}
           className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-block w-full text-center"
         >
           View Details
