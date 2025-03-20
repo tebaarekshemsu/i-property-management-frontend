@@ -6,13 +6,29 @@ import { FilterSection } from "@/components/Listing/FilterSection";
 import { HouseCard } from "@/components/Listing/HouseCard";
 import { Pagination } from "@/components/Listing/Pagination";
 
+interface House {
+  id: number;
+  price: number;
+  category: string;
+  furnish_status: string;
+  bedroom: number;
+  bathroom: number;
+  location: string;
+}
+
 export default function HouseListingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [houses, setHouses] = useState([]);
-  const [filteredHouses, setFilteredHouses] = useState([]);
+  const [houses, setHouses] = useState<House[]>([]);
+  const [filteredHouses, setFilteredHouses] = useState<House[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const housesPerPage = 9;
+
+  const [filterType, setFilterType] = useState("rent");
+
+  const handleFilterChange = (type: string) => {
+    setFilterType(type);
+  };
 
   useEffect(() => {
     const fetchHouses = async () => {
@@ -85,7 +101,7 @@ export default function HouseListingPage() {
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-3xl font-bold">House Listings</h1>
           <div className="mt-4">
-            <SearchBar />
+            {/* <SearchBar /> */}
           </div>
           {/* Filter buttons for Rent and Sell */}
           <div className="mt-4 flex space-x-4">
@@ -122,7 +138,7 @@ export default function HouseListingPage() {
           <div className="w-full md:w-3/4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {currentHouses.map((house) => (
-                <HouseCard key={house.id} {...house} />
+                <HouseCard key={house.id} house={house} />
               ))}
             </div>
             <Pagination

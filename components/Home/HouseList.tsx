@@ -6,7 +6,7 @@ import { HouseCard } from "../reusable/HouseCard";
 import Paths from "@/lib/path";
 
 export function HouseList() {
-  const [houses, setHouses] = useState([]);
+  const [houses, setHouses] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchHouses() {
