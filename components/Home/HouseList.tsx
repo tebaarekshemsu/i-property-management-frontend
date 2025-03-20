@@ -8,6 +8,7 @@ import Paths from "@/lib/path";
 
 export function HouseList() {
   const [houses, setHouses] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     async function fetchHouses() {
@@ -21,7 +22,7 @@ export function HouseList() {
       } catch (error) {
         console.error("Error fetching houses:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false after the fetch completes
       }
     }
 

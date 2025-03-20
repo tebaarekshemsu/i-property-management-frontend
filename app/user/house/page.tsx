@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FilterSection } from "@/components/Listing/FilterSection";
 import { HouseCard } from "@/components/Listing/HouseCard";
 import { Pagination } from "@/components/Listing/Pagination";
+import { ShimmerCard } from "@/components/Listing/ShimmerCard"; // Import ShimmerCard
 
 export default function HouseListingPage() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function HouseListingPage() {
   const [filteredHouses, setFilteredHouses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const housesPerPage = 9;
-
+  const [loading, setLoading] = useState(true); // Add loading state
   const [filterType, setFilterType] = useState("rent");
 
   const handleFilterChange = (type: string) => {
@@ -130,9 +131,13 @@ export default function HouseListingPage() {
           </div>
           <div className="w-full md:w-3/4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentHouses.map((house) => (
-                <HouseCard key={house.id} {...house} />
-              ))}
+              {loading
+                ? Array.from({ length: 6 }).map((_, index) => (
+                    <ShimmerCard key={index} /> // Display shimmer cards while loading
+                  ))
+                : currentHouses.map((house) => (
+                    <HouseCard key={house.id} {...house} />
+                  ))}
             </div>
             <Pagination
               currentPage={currentPage}
