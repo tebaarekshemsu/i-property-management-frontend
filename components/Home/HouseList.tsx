@@ -8,7 +8,6 @@ import Paths from "@/lib/path";
 
 export function HouseList() {
   const [houses, setHouses] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchHouses() {

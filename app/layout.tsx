@@ -23,7 +23,7 @@ export default async function RootLayout({
   const lang = (await cookieStore).get("lang")?.value || "en";
 
   return (
-    <html lang={lang}>
+    <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <div>{children}</div>
       </body>
