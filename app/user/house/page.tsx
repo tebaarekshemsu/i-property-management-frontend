@@ -5,28 +5,36 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FilterSection } from "@/components/Listing/FilterSection";
 import { HouseCard } from "@/components/Listing/HouseCard";
 import { Pagination } from "@/components/Listing/Pagination";
+import { ShimmerCard } from "@/components/Listing/ShimmerCard";
 
 export default function HouseListingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [houses, setHouses] = useState([]);
   const [filteredHouses, setFilteredHouses] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
   const [currentPage, setCurrentPage] = useState(1);
   const housesPerPage = 9;
 
   useEffect(() => {
     const fetchHouses = async () => {
-      const response = await fetch("http://127.0.0.1:8000/user/house-list");
-      const data = await response.json();
-      setHouses(data.houses);
-      setFilteredHouses(data.houses); // Set initial filtered houses
+      setLoading(true); // Start loading
+      try {
+        const response = await fetch("http://127.0.0.1:8000/user/house-list");
+        const data = await response.json();
+        setHouses(data.houses);
+        setFilteredHouses(data.houses); // Set initial filtered houses
+      } catch (error) {
+        console.error("Error fetching houses:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
     };
 
     fetchHouses();
   }, []);
 
   useEffect(() => {
-    // Extract filter parameters from the URL
     const minPrice = searchParams.get("min_price");
     const maxPrice = searchParams.get("max_price");
     const houseType = searchParams.get("house_type");
@@ -35,7 +43,6 @@ export default function HouseListingPage() {
     const bathrooms = searchParams.get("bathrooms");
     const location = searchParams.get("location");
 
-    // Apply filters based on URL parameters
     let newFilteredHouses = houses;
 
     if (minPrice)
@@ -68,7 +75,7 @@ export default function HouseListingPage() {
       );
 
     setFilteredHouses(newFilteredHouses);
-    setCurrentPage(1); // Reset to page 1 when filtering
+    setCurrentPage(1);
   }, [searchParams, houses]);
 
   const totalPages = Math.ceil(filteredHouses.length / housesPerPage);
@@ -92,11 +99,19 @@ export default function HouseListingPage() {
             <FilterSection />
           </div>
           <div className="w-full md:w-3/4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentHouses.map((house) => (
-                <HouseCard key={house.id} {...house} />
-              ))}
-            </div>
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {Array.from({ length: housesPerPage }).map((_, index) => (
+                  <ShimmerCard key={index} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {currentHouses.map((house) => (
+                  <HouseCard key={house.id} {...house} />
+                ))}
+              </div>
+            )}
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
