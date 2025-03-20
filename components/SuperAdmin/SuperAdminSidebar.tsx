@@ -1,56 +1,186 @@
 "use client"
 
-import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, DollarSign, CreditCard, BarChart, Settings, LogOut } from "lucide-react"
-// import { useLanguage } from "@/contexts/LanguageContext"
+import {
+  Users,
+  Building,
+  BarChart,
+  UserCircle,
+  Settings,
+  LogOut,
+  CircleDollarSign,
+  FileSpreadsheet,
+  Shield,
+  Wallet,
+  FileText,
+  Globe,
+} from "lucide-react"
+import Link from "next/link"
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+} from "@/components/ui/sidebar"
+import { Logo } from "@/public/Logo"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { useLanguage } from "@/components/language-provider"
+import { useMemo } from "react"
 
 export function SuperAdminSidebar() {
   const pathname = usePathname()
-  // const { t } = useLanguage()
 
-  const isActive = (path: string) => {
-    return pathname === path
-  }
+  // Use the language context, but provide fallbacks if it's not available
+  const languageData = useLanguage()
+  const { lang, dictionary } = useMemo(() => {
+    try {
+      return {
+        lang: languageData.lang,
+        dictionary: languageData.dictionary,
+      }
+    } catch (error) {
+      console.warn("SuperAdminSidebar used outside of LanguageProvider")
+      return {
+        lang: "en",
+        dictionary: {
+          superAdmin: {
+            dashboard: "Dashboard",
+            admins: "Admins",
+            users: "Users",
+            properties: "Properties",
+            finance: "Finance",
+            expenses: "Expenses",
+            reports: "Reports",
+            auditLogs: "Audit Logs",
+            profile: "Profile",
+            settings: "Settings",
+          },
+          navigation: {
+            logout: "Logout",
+          },
+        },
+      }
+    }
+  }, [languageData])
 
-  const navItems = [
-    { href: "/super-admin", label: ("dashboard"), icon: LayoutDashboard },
-    { href: "/super-admin/admins", label: ("adminManagement"), icon: Users },
-    { href: "/super-admin/finances", label: ("financialOverview"), icon: DollarSign },
-    { href: "/super-admin/expenses", label: ("expenseRequests"), icon: CreditCard },
-    { href: "/super-admin/reports", label: ("systemReports"), icon: BarChart },
-    { href: "/super-admin/settings", label: ("systemSettings"), icon: Settings },
+  const navigation = [
+    {
+      name: dictionary.superAdmin.dashboard,
+      href: "/super-admin",
+      icon: BarChart,
+    },
+    {
+      name: dictionary.superAdmin.admins,
+      href: "/super-admin/admins",
+      icon: Shield,
+    },
+    {
+      name: dictionary.superAdmin.users,
+      href: "/super-admin/users",
+      icon: Users,
+    },
+    {
+      name: dictionary.superAdmin.properties,
+      href: "/super-admin/properties",
+      icon: Building,
+    },
+    {
+      name: dictionary.superAdmin.finance,
+      href: "/super-admin/finance",
+      icon: CircleDollarSign,
+    },
+    {
+      name: dictionary.superAdmin.expenses,
+      href: "/super-admin/expenses",
+      icon: Wallet,
+    },
+    {
+      name: dictionary.superAdmin.reports,
+      href: "/super-admin/reports",
+      icon: FileSpreadsheet,
+    },
+    {
+      name: dictionary.superAdmin.auditLogs,
+      href: "/super-admin/audit-logs",
+      icon: FileText,
+    },
+  ]
+
+  const footerNavigation = [
+    {
+      name: dictionary.superAdmin.profile,
+      href: "/super-admin/profile",
+      icon: UserCircle,
+    },
+    {
+      name: dictionary.superAdmin.settings,
+      href: "/super-admin/settings",
+      icon: Settings,
+    },
+    {
+      name: dictionary.navigation.logout,
+      href: "/logout",
+      icon: LogOut,
+    },
   ]
 
   return (
-    <div className="w-64 bg-white shadow-md ">
-      <div className="p-6 bg-blue-700 text-white">
-        <h1 className="text-2xl font-bold">{("superAdminPanel")}</h1>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="flex items-center justify-center p-4">
+        <div className="flex items-center space-x-2">
+          <Logo />
+         
+        </div>
+      </SidebarHeader>
+      <SidebarSeparator />
+
+      {/* Language Switcher at the top of the sidebar for better visibility */}
+      <div className="px-3 py-2">
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
+            <Globe className="h-4 w-4" />
+            <span className="text-sm font-medium">{lang === "en" ? "English" : "አማርኛ"}</span>
+          </div>
+          <LanguageSwitcher iconOnly={true} />
+        </div>
       </div>
-      <nav className="mt-6">
-        <ul>
-          {navItems.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={`flex items-center px-6 py-3 text-gray-600 hover:bg-blue-50 hover:text-blue-600 ${
-                  isActive(item.href) ? "bg-blue-50 text-blue-600 border-r-4 border-blue-600" : ""
-                }`}
-              >
-                <item.icon className="w-5 h-5 mr-3" />
-                <span>{item.label}</span>
-              </Link>
-            </li>
+      <SidebarSeparator />
+
+      <SidebarContent>
+        <SidebarMenu>
+          {navigation.map((item) => (
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.name}>
+                <Link href={item.href}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           ))}
-          <li className="mt-6">
-            <Link href="/auth" className="flex items-center px-6 py-3 text-red-600 hover:bg-red-50">
-              <LogOut className="w-5 h-5 mr-3" />
-              <span>{("logout")}</span>
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    </div>
+        </SidebarMenu>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarSeparator />
+          {footerNavigation.map((item) => (
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild tooltip={item.name}>
+                <Link href={item.href}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
   )
 }
 

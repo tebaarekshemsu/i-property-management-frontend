@@ -1,7 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
-import Paths from "@/path";
-
+import Image from "next/image"
+import Link from "next/link"
+import Paths from "@/lib/path"
 export function HeroSection() {
   return (
     <div className="relative flex items-center justify-center  from-gray-100 to-white py-16 px-8">

@@ -4,72 +4,72 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Search } from "lucide-react"
 
-export default function AdminsPage() {
-  // Sample admin data
-  const admins = [
+export default function UsersPage() {
+  // Sample user data
+  const users = [
     {
       id: 1,
-      name: "Admin A",
-      email: "admin.a@example.com",
-      role: "Property Manager",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      role: "User",
       status: "Active",
-      properties: 15,
-      joinDate: "2022-01-15",
+      properties: 3,
+      joinDate: "2023-01-15",
     },
     {
       id: 2,
-      name: "Admin B",
-      email: "admin.b@example.com",
-      role: "User Manager",
+      name: "Sarah Johnson",
+      email: "sarah.johnson@example.com",
+      role: "User",
       status: "Active",
-      properties: 0,
-      joinDate: "2022-02-20",
+      properties: 2,
+      joinDate: "2023-02-20",
     },
     {
       id: 3,
-      name: "Admin C",
-      email: "admin.c@example.com",
-      role: "Finance Manager",
+      name: "Michael Brown",
+      email: "michael.brown@example.com",
+      role: "Agent",
       status: "Active",
-      properties: 0,
-      joinDate: "2022-03-10",
+      properties: 8,
+      joinDate: "2023-03-10",
     },
     {
       id: 4,
-      name: "Admin D",
-      email: "admin.d@example.com",
-      role: "Property Manager",
+      name: "Emily Davis",
+      email: "emily.davis@example.com",
+      role: "User",
       status: "Inactive",
-      properties: 8,
-      joinDate: "2022-04-05",
+      properties: 1,
+      joinDate: "2023-04-05",
     },
     {
       id: 5,
-      name: "Admin E",
-      email: "admin.e@example.com",
-      role: "Support Manager",
+      name: "Robert Wilson",
+      email: "robert.wilson@example.com",
+      role: "Agent",
       status: "Active",
-      properties: 0,
-      joinDate: "2022-05-12",
+      properties: 5,
+      joinDate: "2023-05-12",
     },
   ]
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Admins</h2>
+        <h2 className="text-2xl font-bold">Users</h2>
         <Button>
-          <Plus className="mr-2 h-4 w-4" /> Add Admin
+          <Plus className="mr-2 h-4 w-4" /> Add User
         </Button>
       </div>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-lg font-medium">Admin Management</CardTitle>
+          <CardTitle className="text-lg font-medium">User Management</CardTitle>
           <div className="flex items-center space-x-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search admins..." className="w-[250px] pl-8" />
+              <Input type="search" placeholder="Search users..." className="w-[250px] pl-8" />
             </div>
           </div>
         </CardHeader>
@@ -87,24 +87,24 @@ export default function AdminsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {admins.map((admin) => (
-                <TableRow key={admin.id}>
-                  <TableCell className="font-medium">{admin.name}</TableCell>
-                  <TableCell>{admin.email}</TableCell>
-                  <TableCell>{admin.role}</TableCell>
+              {users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.role}</TableCell>
                   <TableCell>
                     <span
                       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        admin.status === "Active"
+                        user.status === "Active"
                           ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
                           : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
                       }`}
                     >
-                      {admin.status}
+                      {user.status}
                     </span>
                   </TableCell>
-                  <TableCell>{admin.properties}</TableCell>
-                  <TableCell>{admin.joinDate}</TableCell>
+                  <TableCell>{user.properties}</TableCell>
+                  <TableCell>{user.joinDate}</TableCell>
                   <TableCell className="text-right">
                     <Button variant="ghost" size="sm">
                       Edit

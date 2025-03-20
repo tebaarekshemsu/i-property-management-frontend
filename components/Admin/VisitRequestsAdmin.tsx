@@ -164,8 +164,8 @@ export function VisitRequestsAdmin() {
     <div>
       <h1 className="text-3xl font-bold mb-8">{("visitRequests")}</h1>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full">
+      <div className="bg-white rounded-lg shadow overflow-x-auto min-w-full ">
+        <table className="min-w-full overflow-x-auto">
           <thead>
             <tr className="bg-gray-100">
               <th className="py-3 px-4 text-left">{("house")}</th>

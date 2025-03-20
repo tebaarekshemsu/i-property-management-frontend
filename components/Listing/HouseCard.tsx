@@ -1,6 +1,12 @@
+<<<<<<< HEAD
+import Paths from "@/lib/path"
+import Image from "next/image"
+import Link from "next/link"
+=======
 import Paths from "@/path";
 import Image from "next/image";
 import Link from "next/link";
+>>>>>>> bedd520ee2571d4607466546144922ebd9d414a0
 
 interface HouseCardProps {
   house_id: string;

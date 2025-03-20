@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { HouseCard } from "../reusable/HouseCard";
 import { ShimmerCard } from "../reusable/ShimmerCard";
-import Paths from "@/path";
+import Paths from "@/lib/path";
 
 export function HouseList() {
   const [houses, setHouses] = useState([]);
@@ -38,8 +38,8 @@ export function HouseList() {
           the real estate market. Our platform offers a user-friendly interface
           that enables individuals to browse property listings, request visits,
           and manage their accounts effortlessly. We understand the complexities
-          of property transactions, which is why we've designed our system to
-          reduce manual intervention and enhance efficiency.
+          of property transactions, which is why we&#39;ve designed our system
+          to reduce manual intervention and enhance efficiency.
         </p>
         <Link href={Paths.userHouseListPath()}>
           <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">

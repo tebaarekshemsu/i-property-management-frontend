@@ -91,12 +91,40 @@ export default function HouseListingPage() {
       <header className="sticky top-0 z-20 bg-white shadow">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-3xl font-bold">House Listings</h1>
+          <div className="mt-4">
+            <SearchBar />
+          </div>
+          {/* Filter buttons for Rent and Sell */}
+          <div className="mt-4 flex space-x-4">
+            <button
+              onClick={() => handleFilterChange("rent")}
+              className={`px-4 py-2 rounded ${
+                filterType === "rent"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-800"
+              }`}
+            >
+              Rent
+            </button>
+            <button
+              onClick={() => handleFilterChange("sell")}
+              className={`px-4 py-2 rounded ${
+                filterType === "sell"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-800"
+              }`}
+            >
+              Sell
+            </button>
+          </div>
         </div>
       </header>
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="md:w-1/4">
-            <FilterSection />
+            <div className="md:sticky md:top-[14rem] md:h-[calc(100vh-6rem)] overflow-y-auto">
+              <FilterSection />
+            </div>
           </div>
           <div className="w-full md:w-3/4">
             {loading ? (

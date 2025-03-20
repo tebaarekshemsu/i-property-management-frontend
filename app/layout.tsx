@@ -1,35 +1,30 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type React from "react";
 import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// import { cn } from "@/lib/utils";
+// import { LanguageProvider } from "@/components/language-provider";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "I Property Management",
-  description: "House rental and purchase services",
-  icons: {
-    icon: "public/logo.svg",
-  },
+  title: "I property solution",
+  description: "Find your dream home in Ethiopia",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const cookieStore = cookies();
+  const lang = (await cookieStore).get("lang")?.value || "en";
+
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang={lang}>
+      <body className={`${inter.className} antialiased`}>
         <div>{children}</div>
       </body>
     </html>
