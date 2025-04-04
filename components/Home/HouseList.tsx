@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 export function HouseList() {
-<<<<<<< HEAD
   const [houses, setHouses] = useState<any[]>([]);
   let placeholder = [{
     "id": 1,
@@ -45,14 +44,7 @@ export function HouseList() {
     "description": "a greate house for us",
     "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
   }];
-=======
-  const [houses, setHouses] = useState([]);
-<<<<<<< HEAD
   const [loading, setLoading] = useState(true); // Add loading state
->>>>>>> 6a59f0ca2ba0a4d3980b2e16bc7878061c76d9fe
-=======
-  const [loading, setLoading] = useState(true);
->>>>>>> 6b0a453e88cb9d8f38896149a56867760c50775f
 
   // State for the service carousel
   const [currentSlide, setCurrentSlide] = useState(0);
