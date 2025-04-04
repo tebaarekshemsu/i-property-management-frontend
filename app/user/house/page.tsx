@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { FilterSection } from "@/components/Listing/FilterSection";
 import { HouseCard } from "@/components/Listing/HouseCard";
 import { Pagination } from "@/components/Listing/Pagination";
+<<<<<<< HEAD
 
 interface House {
   house_id: number;
@@ -15,15 +16,18 @@ interface House {
   bathroom: number;
   location: string;
 }
+=======
+import { ShimmerCard } from "@/components/Listing/ShimmerCard"; // Import ShimmerCard
+>>>>>>> 6a59f0ca2ba0a4d3980b2e16bc7878061c76d9fe
 
 export default function HouseListingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [houses, setHouses] = useState<House[]>([]);
-  const [filteredHouses, setFilteredHouses] = useState<House[]>([]);
+  const [houses, setHouses] = useState([]);
+  const [filteredHouses, setFilteredHouses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const housesPerPage = 9;
-
+  const [loading, setLoading] = useState(true); // Add loading state
   const [filterType, setFilterType] = useState("rent");
 
   const handleFilterChange = (type: string) => {
@@ -32,17 +36,23 @@ export default function HouseListingPage() {
 
   useEffect(() => {
     const fetchHouses = async () => {
-      const response = await fetch("http://127.0.0.1:8000/user/house-list");
-      const data = await response.json();
-      setHouses(data.houses);
-      setFilteredHouses(data.houses); // Set initial filtered houses
+      setLoading(true); // Start loading
+      try {
+        const response = await fetch("http://127.0.0.1:8000/user/house-list");
+        const data = await response.json();
+        setHouses(data.houses);
+        setFilteredHouses(data.houses); // Set initial filtered houses
+      } catch (error) {
+        console.error("Error fetching houses:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
     };
 
     fetchHouses();
   }, []);
 
   useEffect(() => {
-    // Extract filter parameters from the URL
     const minPrice = searchParams.get("min_price");
     const maxPrice = searchParams.get("max_price");
     const houseType = searchParams.get("house_type");
@@ -51,7 +61,6 @@ export default function HouseListingPage() {
     const bathrooms = searchParams.get("bathrooms");
     const location = searchParams.get("location");
 
-    // Apply filters based on URL parameters
     let newFilteredHouses = houses;
 
     if (minPrice)
@@ -84,7 +93,7 @@ export default function HouseListingPage() {
       );
 
     setFilteredHouses(newFilteredHouses);
-    setCurrentPage(1); // Reset to page 1 when filtering
+    setCurrentPage(1);
   }, [searchParams, houses]);
 
   const totalPages = Math.ceil(filteredHouses.length / housesPerPage);
@@ -100,9 +109,7 @@ export default function HouseListingPage() {
       <header className="sticky top-0 z-20 bg-white shadow">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-3xl font-bold">House Listings</h1>
-          <div className="mt-4">
-            {/* <SearchBar /> */}
-          </div>
+          <div className="mt-4">{/* <SearchBar /> */}</div>
           {/* Filter buttons for Rent and Sell */}
           <div className="mt-4 flex space-x-4">
             <button
@@ -137,9 +144,19 @@ export default function HouseListingPage() {
           </div>
           <div className="w-full md:w-3/4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<<<<<<< HEAD
               {currentHouses.map((house) => (
                 <HouseCard key={house.house_id} house={house} />
               ))}
+=======
+              {loading
+                ? Array.from({ length: 6 }).map((_, index) => (
+                    <ShimmerCard key={index} /> // Display shimmer cards while loading
+                  ))
+                : currentHouses.map((house) => (
+                    <HouseCard key={house.id} {...house} />
+                  ))}
+>>>>>>> 6a59f0ca2ba0a4d3980b2e16bc7878061c76d9fe
             </div>
             <Pagination
               currentPage={currentPage}
