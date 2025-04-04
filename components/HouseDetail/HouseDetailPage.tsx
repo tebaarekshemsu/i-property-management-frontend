@@ -7,8 +7,9 @@ import { VisitRequestForm } from "./VisitRequestForm";
 
 export function HouseDetailPage() {
   const router = useRouter();
-  const { house_id } = router.query;
-  //const  house_id  = useParams(); // Get house ID from route parameters
+  const house_id = useParams();
+  console.log(house_id);
+  // Get house ID from route parameters
   const [houseData, setHouseData] = useState(null);
   const [showVisitForm, setShowVisitForm] = useState(false);
 
@@ -17,7 +18,9 @@ export function HouseDetailPage() {
       //if (!house_id) return; // Exit if no house ID is available
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/user/house/${48}`);
+        const response = await fetch(
+          `http://127.0.0.1:8000/user/house/${house_id.id}`
+        );
 
         if (!response.ok) throw new Error("House not found");
 
@@ -30,7 +33,7 @@ export function HouseDetailPage() {
     };
 
     fetchHouseDetail();
-  }, [house_id]);
+  }, [house_id.id]);
 
   if (!houseData) {
     return <div>Loading...</div>;
@@ -38,7 +41,7 @@ export function HouseDetailPage() {
 
   // Default values
   const defaultValues = {
-    name: "No Name",
+    name: `${house_id.id}`,
     image_urls: [
       "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
     ],
