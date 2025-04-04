@@ -7,7 +7,7 @@ import { HouseCard } from "@/components/Listing/HouseCard";
 import { Pagination } from "@/components/Listing/Pagination";
 
 interface House {
-  id: number;
+  house_id: number;
   price: number;
   category: string;
   furnish_status: string;
@@ -138,7 +138,7 @@ export default function HouseListingPage() {
           <div className="w-full md:w-3/4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {currentHouses.map((house) => (
-                <HouseCard key={house.id} house={house} />
+                <HouseCard key={house.house_id} house={house} />
               ))}
             </div>
             <Pagination

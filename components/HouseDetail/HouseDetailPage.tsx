@@ -8,7 +8,7 @@ import { VisitRequestForm } from "./VisitRequestForm";
 export function HouseDetailPage() {
   const router = useRouter();
   const { house_id } = router.query;
-  //const  house_id  = useParams(); // Get house ID from route parameters
+  //const  house_id  = useParams();zz // Get house ID from route parameters
   const [houseData, setHouseData] = useState(null);
   const [showVisitForm, setShowVisitForm] = useState(false);
 

@@ -7,6 +7,33 @@ import Paths from "@/lib/path";
 
 export function HouseList() {
   const [houses, setHouses] = useState<any[]>([]);
+  let placeholder = [{
+    "id": 1,
+    "price": 14561,
+    "description": "a greate house for us",
+    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+  },
+  {
+    "id": 1,
+    "price": 14561,
+    "description": "a greate house for us",
+    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+  },{
+    "id": 1,
+    "price": 14561,
+    "description": "a greate house for us",
+    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+  },{
+    "id": 1,
+    "price": 14561,
+    "description": "a greate house for us",
+    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+  },{
+    "id": 1,
+    "price": 14561,
+    "description": "a greate house for us",
+    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
+  }];
 
   useEffect(() => {
     async function fetchHouses() {
@@ -18,6 +45,7 @@ export function HouseList() {
         const data = await response.json();
         setHouses(data.featured_houses);
       } catch (error) {
+        setHouses(placeholder)
         console.error("Error fetching houses:", error);
       }
     }
