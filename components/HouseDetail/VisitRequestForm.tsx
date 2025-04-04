@@ -1,31 +1,66 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
+import type React from "react";
+import { useState } from "react";
 
 interface VisitRequestFormProps {
-  onClose: () => void
-  onSubmit: (data: { name: string; phoneNumber: string; visitDate: string }) => void
+  onClose: () => void;
+  onSubmit: (data: {
+    name: string;
+    phoneNumber: string;
+    visitDate: string;
+  }) => void;
 }
 
-export function VisitRequestForm({ onClose, onSubmit }: VisitRequestFormProps) {
-  const [name, setName] = useState("")
-  const [phoneNumber, setPhoneNumber] = useState("")
-  const [visitDate, setVisitDate] = useState("")
+export function VisitRequestForm({ onClose }: VisitRequestFormProps) {
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [visitDate, setVisitDate] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit({ name, phoneNumber, visitDate })
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Prepare data to send to the backend
+    const requestData = {
+      name,
+      phoneNumber,
+      visitDate,
+    };
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/user/visite-request",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Success:", result);
+        onClose(); // Close the form on success
+      } else {
+        const errorData = await response.json();
+        console.error("Error:", errorData.message);
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4">Request a Visit</h2>
         <form onSubmit={handleSubmit}>
+          {/* Form fields remain the same */}
           <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
               Name
             </label>
             <input
@@ -38,7 +73,10 @@ export function VisitRequestForm({ onClose, onSubmit }: VisitRequestFormProps) {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="phoneNumber"
+              className="block text-sm font-medium text-gray-700"
+            >
               Phone Number
             </label>
             <input
@@ -51,7 +89,10 @@ export function VisitRequestForm({ onClose, onSubmit }: VisitRequestFormProps) {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="visitDate" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="visitDate"
+              className="block text-sm font-medium text-gray-700"
+            >
               Preferred Visit Date
             </label>
             <input
@@ -81,6 +122,5 @@ export function VisitRequestForm({ onClose, onSubmit }: VisitRequestFormProps) {
         </form>
       </div>
     </div>
-  )
+  );
 }
-

@@ -4,9 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FilterSection } from "@/components/Listing/FilterSection";
 import { HouseCard } from "@/components/Listing/HouseCard";
-import { Pagination } from "@/components/Listing/Pagination";
-<<<<<<< HEAD
-
 interface House {
   house_id: number;
   price: number;
@@ -16,85 +13,38 @@ interface House {
   bathroom: number;
   location: string;
 }
-=======
 import { ShimmerCard } from "@/components/Listing/ShimmerCard"; // Import ShimmerCard
->>>>>>> 6a59f0ca2ba0a4d3980b2e16bc7878061c76d9fe
+import { Pagination } from "@/components/Listing/Pagination";
 
 export default function HouseListingPage() {
-  const router = useRouter();
+  // Removed unused variable 'router'
   const searchParams = useSearchParams();
-  const [houses, setHouses] = useState([]);
+  const [houses, setHouses] = useState<House[]>([]);
   const [filteredHouses, setFilteredHouses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const housesPerPage = 9;
-  const [loading, setLoading] = useState(true); // Add loading state
-  const [filterType, setFilterType] = useState("rent");
+  const [loading, setLoading] = useState(true);
 
-  const handleFilterChange = (type: string) => {
-    setFilterType(type);
+  const fetchHouses = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      const response = await fetch(
+        `http://127.0.0.1:8000/user/house-list?${params.toString()}`
+      );
+      const data = await response.json();
+      setHouses(data.houses);
+      setFilteredHouses(data.houses);
+    } catch (error) {
+      console.error("Error fetching houses:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const fetchHouses = async () => {
-      setLoading(true); // Start loading
-      try {
-        const response = await fetch("http://127.0.0.1:8000/user/house-list");
-        const data = await response.json();
-        setHouses(data.houses);
-        setFilteredHouses(data.houses); // Set initial filtered houses
-      } catch (error) {
-        console.error("Error fetching houses:", error);
-      } finally {
-        setLoading(false); // Stop loading
-      }
-    };
-
     fetchHouses();
-  }, []);
-
-  useEffect(() => {
-    const minPrice = searchParams.get("min_price");
-    const maxPrice = searchParams.get("max_price");
-    const houseType = searchParams.get("house_type");
-    const furnishingStatus = searchParams.get("furnishing_status");
-    const bedrooms = searchParams.get("bedrooms");
-    const bathrooms = searchParams.get("bathrooms");
-    const location = searchParams.get("location");
-
-    let newFilteredHouses = houses;
-
-    if (minPrice)
-      newFilteredHouses = newFilteredHouses.filter(
-        (house) => house.price >= Number(minPrice)
-      );
-    if (maxPrice)
-      newFilteredHouses = newFilteredHouses.filter(
-        (house) => house.price <= Number(maxPrice)
-      );
-    if (houseType)
-      newFilteredHouses = newFilteredHouses.filter(
-        (house) => house.category === houseType
-      );
-    if (furnishingStatus)
-      newFilteredHouses = newFilteredHouses.filter(
-        (house) => house.furnish_status === furnishingStatus
-      );
-    if (bedrooms)
-      newFilteredHouses = newFilteredHouses.filter(
-        (house) => house.bedroom === Number(bedrooms)
-      );
-    if (bathrooms)
-      newFilteredHouses = newFilteredHouses.filter(
-        (house) => house.bathroom === Number(bathrooms)
-      );
-    if (location)
-      newFilteredHouses = newFilteredHouses.filter((house) =>
-        house.location.includes(location)
-      );
-
-    setFilteredHouses(newFilteredHouses);
-    setCurrentPage(1);
-  }, [searchParams, houses]);
+  }, [searchParams]);
 
   const totalPages = Math.ceil(filteredHouses.length / housesPerPage);
   const indexOfLastHouse = currentPage * housesPerPage;
@@ -105,64 +55,35 @@ export default function HouseListingPage() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-20 bg-white shadow">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-3xl font-bold">House Listings</h1>
-          <div className="mt-4">{/* <SearchBar /> */}</div>
-          {/* Filter buttons for Rent and Sell */}
-          <div className="mt-4 flex space-x-4">
-            <button
-              onClick={() => handleFilterChange("rent")}
-              className={`px-4 py-2 rounded ${
-                filterType === "rent"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              Rent
-            </button>
-            <button
-              onClick={() => handleFilterChange("sell")}
-              className={`px-4 py-2 rounded ${
-                filterType === "sell"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              Sell
-            </button>
-          </div>
-        </div>
-      </header>
-      <main className="flex-grow container mx-auto px-4 py-8">
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <header className="sticky top-0 z-20 bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg w-[300px] "></header>
+      <main className="flex-grow container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row gap-8">
           <div className="md:w-1/4">
-            <div className="md:sticky md:top-[14rem] md:h-[calc(100vh-6rem)] overflow-y-auto">
-              <FilterSection />
-            </div>
+            <FilterSection />
           </div>
           <div className="w-full md:w-3/4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-<<<<<<< HEAD
-              {currentHouses.map((house) => (
-                <HouseCard key={house.house_id} house={house} />
-              ))}
-=======
-              {loading
-                ? Array.from({ length: 6 }).map((_, index) => (
-                    <ShimmerCard key={index} /> // Display shimmer cards while loading
-                  ))
-                : currentHouses.map((house) => (
-                    <HouseCard key={house.id} {...house} />
-                  ))}
->>>>>>> 6a59f0ca2ba0a4d3980b2e16bc7878061c76d9fe
+              <div className="w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {loading
+                    ? Array.from({ length: 6 }).map((_, index) => (
+                        <ShimmerCard key={index} />
+                      ))
+                    : currentHouses.map((house: House) => (
+                        <HouseCard
+                          key={house.house_id}
+                          {...house}
+                        />
+                      ))}
+                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
           </div>
         </div>
       </main>

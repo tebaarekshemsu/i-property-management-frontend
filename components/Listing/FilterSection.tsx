@@ -7,7 +7,6 @@ export function FilterSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Initialize state with values from URL or defaults
   const [isOpen, setIsOpen] = useState(false);
   const [minPrice, setMinPrice] = useState<string>(
     searchParams.get("min_price") || ""
@@ -31,10 +30,12 @@ export function FilterSection() {
     searchParams.get("location") || ""
   );
 
+  // State for Rent or Sell filter (handled only on the frontend)
+  const [category, setCategory] = useState<string>("");
+
   const applyFilters = () => {
     const params = new URLSearchParams();
 
-    // Add filter parameters
     if (minPrice) params.set("min_price", minPrice);
     if (maxPrice) params.set("max_price", maxPrice);
     if (houseType && houseType !== "Any") params.set("house_type", houseType);
@@ -44,7 +45,7 @@ export function FilterSection() {
     if (bathrooms) params.set("bathrooms", bathrooms);
     if (location) params.set("location", location);
 
-    // Update URL without refreshing
+    // Remove category from params since it's handled on the frontend
     router.push(`?${params.toString()}`);
   };
 
@@ -52,7 +53,7 @@ export function FilterSection() {
     <div className="mb-4">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 md:hidden"
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 md:hidden transition-all duration-300"
       >
         {isOpen ? "Hide Filters" : "Show Filters"}
       </button>
@@ -62,22 +63,46 @@ export function FilterSection() {
           isOpen ? "block" : "hidden md:block"
         } md:fixed md:top-0 md:left-0 md:w-[300px] md:h-full md:overflow-y-auto md:bg-white md:z-10 md:p-4 md:border-r`}
       >
-        <div>
+        <div className="mt-20">
+          <label className="block text-sm font-medium text-gray-700">
+            Rent or Sell
+          </label>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setCategory("Rent")}
+              className={`flex-1 p-3 rounded-lg ${
+                category === "Rent" ? "bg-blue-500 text-white" : "bg-gray-200"
+              } transition-all duration-300`}
+            >
+              Rent
+            </button>
+            <button
+              onClick={() => setCategory("Sell")}
+              className={`flex-1 p-3 rounded-lg ${
+                category === "Sell" ? "bg-blue-500 text-white" : "bg-gray-200"
+              } transition-all duration-300`}
+            >
+              Sell
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-4">
           <label className="block text-sm font-medium text-gray-700">
             Price Range
           </label>
-          <div className="mt-1 flex space-x-2">
+          <div className="flex space-x-2">
             <input
               type="number"
               placeholder="Min"
-              className="w-1/2 p-2 border rounded-md"
+              className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
             />
             <input
               type="number"
               placeholder="Max"
-              className="w-1/2 p-2 border rounded-md"
+              className="w-1/2 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
             />
@@ -89,7 +114,7 @@ export function FilterSection() {
             House Type
           </label>
           <select
-            className="mt-1 block w-full p-2 border rounded-md"
+            className="mt-1 block w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={houseType}
             onChange={(e) => setHouseType(e.target.value)}
           >
@@ -106,7 +131,7 @@ export function FilterSection() {
             Furnishing Status
           </label>
           <select
-            className="mt-1 block w-full p-2 border rounded-md"
+            className="mt-1 block w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={furnishingStatus}
             onChange={(e) => setFurnishingStatus(e.target.value)}
           >
@@ -124,7 +149,7 @@ export function FilterSection() {
           <input
             type="number"
             min="0"
-            className="mt-1 block w-full p-2 border rounded-md"
+            className="mt-1 block w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={bedrooms}
             onChange={(e) => setBedrooms(e.target.value)}
           />
@@ -137,7 +162,7 @@ export function FilterSection() {
           <input
             type="number"
             min="0"
-            className="mt-1 block w-full p-2 border rounded-md"
+            className="mt-1 block w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={bathrooms}
             onChange={(e) => setBathrooms(e.target.value)}
           />
@@ -149,7 +174,7 @@ export function FilterSection() {
           </label>
           <input
             type="text"
-            className="mt-1 block w-full p-2 border rounded-md"
+            className="mt-1 block w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
@@ -157,7 +182,7 @@ export function FilterSection() {
 
         <button
           onClick={applyFilters}
-          className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg"
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300"
         >
           Apply Filters
         </button>
