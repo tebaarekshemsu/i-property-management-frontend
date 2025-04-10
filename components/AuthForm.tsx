@@ -1,16 +1,23 @@
 "use client";
-
-import type React from "react";
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-hot-toast";
+
+type DecodedToken = {
+  role: "user" | "admin" | "super-admin";
+  exp?: number;
+  iat?: number;
+  [key: string]: any;
+};
 
 export function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
-  const [identifier, setIdentifier] = useState(""); // Changed email to identifier
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [invitationCode, setInvitationCode] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -19,63 +26,124 @@ export function AuthForm() {
     setError("");
 
     if (!identifier || !password || (!isLogin && !name)) {
-      setError("Please fill in all fields");
+      setError("Please fill in all required fields");
       return;
     }
 
     try {
-      // Here you would typically make an API call to your authentication endpoint
-      // For demonstration, we'll just simulate a successful login/signup
-      console.log(isLogin ? "Logging in..." : "Signing up...", {
-        identifier,
-        password,
-        name,
-      });
+      if (isLogin) {
+        const body = new URLSearchParams();
+        body.append("username", identifier);
+        body.append("password", password);
 
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+        const res = await fetch("http://127.0.0.1:8000/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body,
+        });
 
-      // Redirect to dashboard on success
-      router.push("/user");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      setError("Authentication failed. Please try again.");
+        const data = await res.json();
+
+        if (!res.ok || !data.access_token) {
+          throw new Error(data.detail || "Authentication failed");
+        }
+
+        const token = data.access_token;
+        localStorage.setItem("token", token);
+
+        const decoded = jwtDecode<DecodedToken>(token);
+
+      console.log("Decoded token:", decoded); // Debugging line
+        if (decoded.role === "admin") {
+          router.push("/admin");
+        } else if (decoded.role === "super-admin") {
+          router.push("/super-admin");
+        } else {
+          router.push("/user");
+        }
+      } else {
+        const res = await fetch("http://127.0.0.1:8000/user/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            phone_no: identifier,
+            name,
+            password,
+            invitation_code: invitationCode || "",
+            invited_by: 0,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || data.status !== "ok") {
+          throw new Error(data.msg || "Signup failed");
+        }
+
+        toast.success("Signup successful. Please log in.");
+        setIsLogin(true);
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred. Please try again.");
     }
   };
 
   return (
-    <div className="text-center">
-      <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-        {isLogin ? "Sign in to your account" : "Create a new account"}
-      </h2>
+      <div className="text-center">
+        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          {isLogin ? "Sign in to your account" : "Create a new account"}
+        </h2>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div className="rounded-md shadow-sm space-y-4">
           {!isLogin && (
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Full Name"
-              />
-            </div>
+            <>
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Full Name"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="invitation_code"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Invitation Code (Optional)
+                </label>
+                <input
+                  id="invitation_code"
+                  name="invitation_code"
+                  type="text"
+                  value={invitationCode}
+                  onChange={(e) => setInvitationCode(e.target.value)}
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  placeholder="Invitation Code"
+                />
+              </div>
+            </>
           )}
           <div>
             <label
               htmlFor="identifier"
               className="block text-sm font-medium text-gray-700"
             >
-              Email address
+              Phone Number
             </label>
             <input
               id="identifier"
@@ -123,18 +191,16 @@ export function AuthForm() {
           >
             {isLogin ? "Sign in" : "Sign up"}
           </button>
-        </div>
-      </form>
-      <div className="text-center mt-4">
+          <div className="text-center mt-4">
         <button
           onClick={() => setIsLogin(!isLogin)}
           className="font-medium text-blue-600 hover:text-blue-500"
         >
-          {isLogin
-            ? "Need an account? Sign up"
-            : "Already have an account? Sign in"}
+          {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
         </button>
       </div>
-    </div>
-  );
+        </div>
+      </form> 
+      </div>
+      );
 }
