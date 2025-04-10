@@ -16,34 +16,44 @@ import {
 } from "lucide-react";
 
 export function HouseList() {
-  const [houses, setHouses] = useState<any[]>([]);
-  let placeholder = [{
-    "id": 1,
-    "price": 14561,
-    "description": "a greate house for us",
-    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
-  },
-  {
-    "id": 1,
-    "price": 14561,
-    "description": "a greate house for us",
-    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
-  },{
-    "id": 1,
-    "price": 14561,
-    "description": "a greate house for us",
-    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
-  },{
-    "id": 1,
-    "price": 14561,
-    "description": "a greate house for us",
-    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
-  },{
-    "id": 1,
-    "price": 14561,
-    "description": "a greate house for us",
-    "imageUrl":"https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"
-  }];
+  const [houses, setHouses] = useState<unknown[]>([]);
+  const placeholder = [
+    {
+      id: 1,
+      price: 14561,
+      description: "a greate house for us",
+      imageUrl:
+        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
+    },
+    {
+      id: 1,
+      price: 14561,
+      description: "a greate house for us",
+      imageUrl:
+        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
+    },
+    {
+      id: 1,
+      price: 14561,
+      description: "a greate house for us",
+      imageUrl:
+        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
+    },
+    {
+      id: 1,
+      price: 14561,
+      description: "a greate house for us",
+      imageUrl:
+        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
+    },
+    {
+      id: 1,
+      price: 14561,
+      description: "a greate house for us",
+      imageUrl:
+        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
+    },
+  ];
   const [loading, setLoading] = useState(true); // Add loading state
 
   // State for the service carousel
@@ -98,7 +108,7 @@ export function HouseList() {
         const data = await response.json();
         setHouses(data.featured_houses);
       } catch (error) {
-        setHouses(placeholder)
+        setHouses(placeholder);
         console.error("Error fetching houses:", error);
       } finally {
         setLoading(false);
@@ -166,7 +176,7 @@ export function HouseList() {
             <div className="hidden md:block">
               <div className="flex justify-between items-stretch gap-6">
                 <AnimatePresence mode="wait">
-                  {getVisibleSlides().map((service, idx) => (
+                  {getVisibleSlides().map((service) => (
                     <motion.div
                       key={`${service.title}-${service.index}`}
                       initial={{ opacity: 0, x: 50 }}

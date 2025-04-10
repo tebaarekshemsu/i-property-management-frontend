@@ -10,6 +10,7 @@ import { AdditionalInfo } from "@/components/house-posting/AdditionalInfo";
 import { ContactInfo } from "@/components/house-posting/ContactInfo";
 import { PhotoUpload } from "@/components/house-posting/PhotoUpload";
 import { FormProgress } from "@/components/house-posting/FormProgress";
+import { UserGuard } from "@/components/Guards/UserGuard"; // Import the UserGuard
 
 function FormStep() {
   const { currentStep } = useHousePosting();
@@ -45,8 +46,12 @@ function HousePostingForm() {
 
 export default function HousePostingPage() {
   return (
-    <HousePostingProvider>
-      <HousePostingForm />
-    </HousePostingProvider>
+    <UserGuard>
+      {" "}
+      {/* Wrap the content with UserGuard */}
+      <HousePostingProvider>
+        <HousePostingForm />
+      </HousePostingProvider>
+    </UserGuard>
   );
 }

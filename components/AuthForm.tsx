@@ -9,7 +9,7 @@ type DecodedToken = {
   role: "user" | "admin" | "super-admin";
   exp?: number;
   iat?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export function AuthForm() {
@@ -55,7 +55,7 @@ export function AuthForm() {
 
         const decoded = jwtDecode<DecodedToken>(token);
 
-      console.log("Decoded token:", decoded); // Debugging line
+        console.log("Decoded token:", decoded); // Debugging line
         if (decoded.role === "admin") {
           router.push("/admin");
         } else if (decoded.role === "super-admin") {
@@ -93,10 +93,10 @@ export function AuthForm() {
   };
 
   return (
-      <div className="text-center">
-        <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-          {isLogin ? "Sign in to your account" : "Create a new account"}
-        </h2>
+    <div className="text-center">
+      <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+        {isLogin ? "Sign in to your account" : "Create a new account"}
+      </h2>
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <div className="rounded-md shadow-sm space-y-4">
           {!isLogin && (
@@ -192,15 +192,17 @@ export function AuthForm() {
             {isLogin ? "Sign in" : "Sign up"}
           </button>
           <div className="text-center mt-4">
-        <button
-          onClick={() => setIsLogin(!isLogin)}
-          className="font-medium text-blue-600 hover:text-blue-500"
-        >
-          {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
-        </button>
-      </div>
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              {isLogin
+                ? "Need an account? Sign up"
+                : "Already have an account? Sign in"}
+            </button>
+          </div>
         </div>
-      </form> 
-      </div>
-      );
+      </form>
+    </div>
+  );
 }
