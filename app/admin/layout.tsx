@@ -1,5 +1,4 @@
 import type React from "react"
-import { cookies } from "next/headers"
 import { AdminSidebar } from "@/components/Admin/AdminSidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
@@ -10,11 +9,8 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = cookies()
-  const lang = (await cookieStore).get("lang")?.value || "en"
-
   return (
-    <LanguageProvider lang={lang}>
+    <LanguageProvider lang={"en"}>
       <SidebarProvider>
         <div className="flex min-h-screen">
           <AdminSidebar />
