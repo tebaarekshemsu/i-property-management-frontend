@@ -15,7 +15,7 @@ const Paths = {
     return `/user/house/${house_id}`;
   },
   userPostHousePath() {
-    return "/user/house/post-house";
+    return "/house-posting";
   },
 
   adminDashboardPath() {

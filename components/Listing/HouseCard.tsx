@@ -26,7 +26,7 @@ export function HouseCard({
   location,
 }: HouseCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden w-full h-full flex flex-col">
       <div className="relative">
         <Image
           src={
@@ -48,7 +48,7 @@ export function HouseCard({
           {type === "rent" ? "For Rent" : "For Sale"}
         </div>
       </div>
-      <div className="p-4">
+      <div className="p-4 flex-grow flex flex-col">
         <h3 className="text-xl font-semibold mb-2">{name}</h3>
         <p className="text-gray-600 mb-2">
           ${price.toLocaleString()} {type === "rent" ? "/ month" : ""}
@@ -64,7 +64,7 @@ export function HouseCard({
         </div>
         <Link
           href={`${Paths.userHouseDetailPath(house_id)}`}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-block w-full text-center"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded inline-block w-full text-center mt-auto"
         >
           View Details
         </Link>

@@ -7,6 +7,8 @@ import { Menubar, MenubarMenu } from "./header/Menubar";
 import { Button } from "./button";
 import { MobileMenu } from "./header/MobileMenu";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import Path from "@/lib/path";
+import path from "path";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -33,7 +35,7 @@ export function Header() {
       <Link href="/house">
         <MenubarMenu>Contact</MenubarMenu>
       </Link>
-      <Link href="/user/login">
+      <Link href={Path.authPath()}>
         <MenubarMenu>Login/Signup</MenubarMenu>
       </Link>
       <Link href="/user">
@@ -53,7 +55,7 @@ export function Header() {
       <Link href="/house">
         <Button variant="ghost">Contact</Button>
       </Link>
-      <Link href="/user/login">
+      <Link href={Path.authPath()}>
         <Button variant="ghost">Login/Signup</Button>
       </Link>
       <Link href="/user">

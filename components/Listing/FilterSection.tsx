@@ -30,8 +30,10 @@ export function FilterSection() {
     searchParams.get("location") || ""
   );
 
-  // State for Rent or Sell filter (handled only on the frontend)
-  const [category, setCategory] = useState<string>("");
+  // State for Rent or Sell filter
+  const [category, setCategory] = useState<string>(
+    searchParams.get("category") || ""
+  );
 
   const applyFilters = () => {
     const params = new URLSearchParams();
@@ -44,8 +46,8 @@ export function FilterSection() {
     if (bedrooms) params.set("bedrooms", bedrooms);
     if (bathrooms) params.set("bathrooms", bathrooms);
     if (location) params.set("location", location);
+    if (category) params.set("category", category); // Send category to backend
 
-    // Remove category from params since it's handled on the frontend
     router.push(`?${params.toString()}`);
   };
 
@@ -67,23 +69,27 @@ export function FilterSection() {
           <label className="block text-sm font-medium text-gray-700">
             Rent or Sell
           </label>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setCategory("Rent")}
-              className={`flex-1 p-3 rounded-lg ${
-                category === "Rent" ? "bg-blue-500 text-white" : "bg-gray-200"
-              } transition-all duration-300`}
-            >
+          <div className="flex space-x-4">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                value="rent"
+                checked={category === "rent"}
+                onChange={() => setCategory("rent")}
+                className="mr-2"
+              />
               Rent
-            </button>
-            <button
-              onClick={() => setCategory("Sell")}
-              className={`flex-1 p-3 rounded-lg ${
-                category === "Sell" ? "bg-blue-500 text-white" : "bg-gray-200"
-              } transition-all duration-300`}
-            >
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                value="sell"
+                checked={category === "sell"}
+                onChange={() => setCategory("sell")}
+                className="mr-2"
+              />
               Sell
-            </button>
+            </label>
           </div>
         </div>
 

@@ -1,9 +1,10 @@
-import Image from "next/image"
-import Link from "next/link"
-import Paths from "@/lib/path"
+import Image from "next/image";
+import Link from "next/link";
+import Paths from "@/lib/path";
+
 export function HeroSection() {
   return (
-    <div className="relative flex items-center justify-center  from-gray-100 to-white py-16 px-8">
+    <div className="relative flex items-center justify-center from-gray-100 to-white py-16 px-8">
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-6xl mx-auto">
         <div className="w-full md:w-1/2 relative">
           <div className="relative overflow-hidden rounded-2xl shadow-lg">
@@ -24,11 +25,18 @@ export function HeroSection() {
             Discover the perfect place to rent or buy with our extensive
             listings. Let us help you find your next home.
           </p>
-          <Link href={Paths.userHouseListPath()}>
-            <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out">
-              Explore Homes
-            </button>
-          </Link>
+          <div className="flex gap-4">
+            <Link href={Paths.userHouseListPath()}>
+              <button className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out">
+                Explore Homes
+              </button>
+            </Link>
+            <Link href={Paths.userPostHousePath()}>
+              <button className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out">
+                Post House
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

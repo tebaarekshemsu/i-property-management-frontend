@@ -1,42 +1,46 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { AlertCircle } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 
 export function AuthForm() {
-  const [isLogin, setIsLogin] = useState(true)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
-  const [error, setError] = useState("")
-  const router = useRouter()
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     if (!email || !password || (!isLogin && !name)) {
-      setError("Please fill in all fields")
-      return
+      setError("Please fill in all fields");
+      return;
     }
 
     try {
       // Here you would typically make an API call to your authentication endpoint
       // For demonstration, we'll just simulate a successful login/signup
-      console.log(isLogin ? "Logging in..." : "Signing up...", { email, password, name })
+      console.log(isLogin ? "Logging in..." : "Signing up...", {
+        email,
+        password,
+        name,
+      });
 
       // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Redirect to dashboard on success
-      router.push("/user")
+      router.push("/user");
     } catch (err) {
-      setError("Authentication failed. Please try again.")
+      setError("Authentication failed. Please try again.");
     }
-  }
+  };
 
   return (
     <>
@@ -49,7 +53,10 @@ export function AuthForm() {
         <div className="rounded-md shadow-sm space-y-4">
           {!isLogin && (
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Name
               </label>
               <input
@@ -65,7 +72,10 @@ export function AuthForm() {
             </div>
           )}
           <div>
-            <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email-address"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email address
             </label>
             <input
@@ -81,7 +91,10 @@ export function AuthForm() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -115,11 +128,15 @@ export function AuthForm() {
         </div>
       </form>
       <div className="text-center mt-4">
-        <button onClick={() => setIsLogin(!isLogin)} className="font-medium text-blue-600 hover:text-blue-500">
-          {isLogin ? "Need an account? Sign up" : "Already have an account? Sign in"}
+        <button
+          onClick={() => setIsLogin(!isLogin)}
+          className="font-medium text-blue-600 hover:text-blue-500"
+        >
+          {isLogin
+            ? "Need an account? Sign up"
+            : "Already have an account? Sign in"}
         </button>
       </div>
     </>
-  )
+  );
 }
-

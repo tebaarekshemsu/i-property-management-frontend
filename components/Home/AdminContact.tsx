@@ -1,9 +1,9 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, X } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
 interface Admin {
   admin_id: string;
@@ -14,15 +14,29 @@ interface Admin {
 }
 
 const AdminSearch: React.FC = () => {
-  const [areaName, setAreaName] = useState("");
+  const [locations, setLocations] = useState<string[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState("");
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Fetch available locations from the backend
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/user/locations");
+        setLocations(res.data.locations);
+      } catch (error) {
+        console.error("Failed to fetch locations", error);
+      }
+    };
+    fetchLocations();
+  }, []);
+
+  // Fetch admins by selected location
   const handleSearch = async () => {
-    if (!areaName.trim()) return;
+    if (!selectedLocation) return;
 
     setLoading(true);
     setError("");
@@ -30,10 +44,9 @@ const AdminSearch: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/user/admins/search?area_name=${areaName}`
+        `http://127.0.0.1:8000/user/admins/search?area_name=${selectedLocation}`
       );
       setAdmins(response.data.admins);
-      setIsModalOpen(true);
     } catch (err) {
       setError("Failed to fetch admins. Please try again later.");
     } finally {
@@ -41,95 +54,101 @@ const AdminSearch: React.FC = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
   return (
-    <div className="container mx-auto py-8 px-4 max-w-2xl">
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-        <div className="bg-gray-50 p-4 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-center text-gray-800">
-            Search Administrators by Area
-          </h2>
-        </div>
-        <div className="p-6">
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <input
-                type="text"
-                value={areaName}
-                onChange={(e) => setAreaName(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter area name"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <button
-              onClick={handleSearch}
-              disabled={loading || !areaName.trim()}
-              className={`px-4 py-2 rounded-md text-white font-medium ${
-                loading || !areaName.trim()
-                  ? "bg-blue-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              } transition-colors sm:w-auto`}
-            >
-              {loading ? "Searching..." : "Search"}
-            </button>
-          </div>
+    <div className="container mx-auto py-6 px-4 max-w-4xl">
+      <h1 className="text-2xl font-bold mb-6">Search Administrators by Area</h1>
 
-          {error && (
-            <div className="bg-red-50 text-red-700 p-4 rounded-md mb-6 border border-red-200">
-              {error}
-            </div>
-          )}
+      <div className="flex flex-col sm:flex-row gap-3 mb-8">
+        <div className="flex-1">
+          <select
+            value={selectedLocation}
+            onChange={(e) => setSelectedLocation(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Select location</option>
+            {locations.map((loc) => (
+              <option key={loc} value={loc}>
+                {loc}
+              </option>
+            ))}
+          </select>
         </div>
+        <button
+          onClick={handleSearch}
+          disabled={loading || !selectedLocation}
+          className={`px-4 py-2 rounded-md text-white font-medium flex items-center justify-center gap-2 ${
+            loading || !selectedLocation
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          } transition-colors sm:w-auto min-w-[100px]`}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Searching</span>
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4" />
+              <span>Search</span>
+            </>
+          )}
+        </button>
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative">
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              onClick={() => setIsModalOpen(false)}
-            >
-              <X size={24} />
-            </button>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Search Results
-            </h3>
-            {admins.length > 0 ? (
-              <div className="space-y-4">
-                {admins.map((admin) => (
-                  <div
-                    key={admin.admin_id}
-                    className="border border-gray-200 rounded-lg p-4"
-                  >
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {admin.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">
+      {error && (
+        <div className="bg-red-50 text-red-700 p-4 rounded-md mb-6 border border-red-200">
+          {error}
+        </div>
+      )}
+
+      {/* Results Section */}
+      {searched && !loading && !error && (
+        <div className="mt-6">
+          <h2 className="text-xl font-semibold mb-4">
+            {admins.length > 0
+              ? `Administrators in ${selectedLocation}`
+              : `No administrators found in ${selectedLocation}`}
+          </h2>
+
+          {admins.length > 0 ? (
+            <div className="divide-y divide-gray-200">
+              {admins.map((admin) => (
+                <div key={admin.admin_id} className="py-4">
+                  <div className="flex flex-col sm:flex-row sm:justify-between">
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-800">
+                        {admin.name}
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        {admin.admin_type}
+                      </p>
+                    </div>
+                    <div className="mt-2 sm:mt-0 text-sm text-gray-600">
                       Phone: {admin.phone_no}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Type: {admin.admin_type}
-                    </p>
-                    <div className="text-sm text-gray-600">
-                      Areas: {admin.areas.join(", ")}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">
-                No administrators found for this area.
-              </p>
-            )}
-          </div>
+                  <div className="mt-2">
+                    <span className="text-sm text-gray-500">Areas:</span>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {admin.areas.map((area) => (
+                        <span
+                          key={area}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                        >
+                          {area}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 py-4">
+              No administrators are assigned to this area.
+            </p>
+          )}
         </div>
       )}
     </div>

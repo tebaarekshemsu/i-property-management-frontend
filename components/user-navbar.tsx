@@ -1,18 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Building, Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { LanguageSwitcher } from "@/components/LanguageSwitcher"
-import { useLanguage } from "@/components/language-provider"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Building, Menu, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/components/language-provider";
+import { cn } from "@/lib/utils";
+import Paths from "@/lib/path";
 
 export default function UserNavbar() {
-  const { dictionary } = useLanguage()
-  const pathname = usePathname()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { dictionary } = useLanguage();
+  const pathname = usePathname();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigation = [
     { name: dictionary.navigation.home, href: "/" },
@@ -20,7 +21,7 @@ export default function UserNavbar() {
     { name: dictionary.navigation.postHouse, href: "/post-house" },
     { name: dictionary.navigation.about, href: "/about" },
     { name: dictionary.navigation.contact, href: "/contact" },
-  ]
+  ];
 
   return (
     <header className="bg-background border-b">
@@ -43,7 +44,7 @@ export default function UserNavbar() {
                   "px-3 py-2 text-sm font-medium rounded-md",
                   pathname === item.href
                     ? "bg-primary/10 text-primary"
-                    : "text-foreground/70 hover:text-foreground hover:bg-accent",
+                    : "text-foreground/70 hover:text-foreground hover:bg-accent"
                 )}
               >
                 {item.name}
@@ -54,18 +55,29 @@ export default function UserNavbar() {
           <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitcher />
             <Button asChild size="sm" variant="outline">
-              <Link href="/login">{dictionary.navigation.login}</Link>
+              <Link href={Paths.authPath()}>{dictionary.navigation.login}</Link>
             </Button>
             <Button asChild size="sm">
-              <Link href="/signup">{dictionary.navigation.signup}</Link>
+              <Link href={Paths.authPath()}>
+                {dictionary.navigation.signup}
+              </Link>
             </Button>
           </div>
 
           {/* Mobile menu button */}
           <div className="flex md:hidden">
             <LanguageSwitcher />
-            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)} className="ml-2">
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="ml-2"
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
@@ -83,22 +95,32 @@ export default function UserNavbar() {
                   "block px-3 py-2 text-base font-medium rounded-md",
                   pathname === item.href
                     ? "bg-primary/10 text-primary"
-                    : "text-foreground/70 hover:text-foreground hover:bg-accent",
+                    : "text-foreground/70 hover:text-foreground hover:bg-accent"
                 )}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
+
             <div className="pt-4 pb-3 border-t border-border">
               <div className="flex items-center px-3">
-                <Button asChild size="sm" variant="outline" className="w-full mb-2">
-                  <Link href="/login">{dictionary.navigation.login}</Link>
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="w-full mb-2"
+                >
+                  <Link href={Paths.authPath()}>
+                    {dictionary.navigation.login}
+                  </Link>
                 </Button>
               </div>
               <div className="flex items-center px-3">
                 <Button asChild size="sm" className="w-full">
-                  <Link href="/signup">{dictionary.navigation.signup}</Link>
+                  <Link href={Paths.authPath()}>
+                    {dictionary.navigation.signup}
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -106,6 +128,5 @@ export default function UserNavbar() {
         </div>
       )}
     </header>
-  )
+  );
 }
-
