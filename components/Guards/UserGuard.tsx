@@ -37,7 +37,7 @@ export function UserGuard({ children }: UserGuardProps) {
       );
 
       if (decodedToken?.role !== "user") {
-        router.push("/unauthorized"); // Redirect if role is not "user"
+        router.push("/auth"); // Redirect if role is not "user"
         setIsLoading(false);
         return;
       }
@@ -46,8 +46,7 @@ export function UserGuard({ children }: UserGuardProps) {
     } catch (error) {
       console.error("Error decoding token:", error);
       localStorage.removeItem("token"); // Clear invalid token
-      localStorage.removeItem("redirectAfterLogin"); // Clear any stored redirect
-      router.push(authPath);
+      router.push("Paths.authPath()");
       setIsLoading(false);
     } finally {
       setIsLoading(false);
@@ -75,4 +74,5 @@ function UnauthorizedPage() {
   );
 }
 
+// You can export this as well if you want to use it directly as a page
 export { UnauthorizedPage };
