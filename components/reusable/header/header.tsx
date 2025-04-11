@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Logo } from "../../../public/Logo"
+import { useState, useEffect } from "react";
+import { Logo } from "../../../public/Logo";
 import {
   Menubar,
   MenubarMenu,
@@ -12,26 +12,26 @@ import {
   MenubarCheckboxItem,
   MenubarRadioGroup,
   MenubarRadioItem,
-} from "./Menubar"
-import { Button } from "../button"
-import { MobileMenu } from "./MobileMenu"
+} from "./Menubar";
+import { Button } from "../button";
+import { MobileMenu } from "./MobileMenu";
 
 export function MenubarDemo() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsMobileMenuOpen(false)
+        setIsMobileMenuOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleEscape)
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener("keydown", handleEscape)
-    }
-  }, [])
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   const menuItems = (
     <Menubar>
@@ -61,7 +61,9 @@ export function MenubarDemo() {
       <MenubarMenu>
         <MenubarTrigger>View</MenubarTrigger>
         <MenubarContent>
-          <MenubarCheckboxItem checked>Always Show Bookmarks Bar</MenubarCheckboxItem>
+          <MenubarCheckboxItem checked>
+            Always Show Bookmarks Bar
+          </MenubarCheckboxItem>
           <MenubarCheckboxItem>Always Show Full URLs</MenubarCheckboxItem>
           <MenubarSeparator />
           <MenubarItem>Reload</MenubarItem>
@@ -87,7 +89,7 @@ export function MenubarDemo() {
         </MenubarContent>
       </MenubarMenu>
     </Menubar>
-  )
+  );
 
   const mobileMenuItems = (
     <div className="flex flex-col space-y-4">
@@ -96,7 +98,7 @@ export function MenubarDemo() {
       <Button variant="ghost">View</Button>
       <Button variant="ghost">Profiles</Button>
     </div>
-  )
+  );
 
   return (
     <>
@@ -111,10 +113,12 @@ export function MenubarDemo() {
           </Button>
         </div>
       </div>
-      <MobileMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)}>
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      >
         {mobileMenuItems}
       </MobileMenu>
     </>
-  )
+  );
 }
-

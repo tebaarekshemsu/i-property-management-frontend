@@ -13,12 +13,20 @@ export function UserGuard({ children }: UserGuardProps) {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const authPath = Paths.authPath(); // Get the login path
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const currentPath = window.location.pathname;
 
-    if (!token) {
-      router.push(Paths.authPath()); // Redirect to login if no token
+    if (!token && currentPath !== authPath) {
+      // If no token and not already on the login page, store the current path
+      localStorage.setItem("redirectAfterLogin", currentPath);
+      router.push(authPath); // Redirect to login
+      setIsLoading(false);
+      return;
+    } else if (!token && currentPath === authPath) {
+      // If no token and already on the login page, no need to redirect again
       setIsLoading(false);
       return;
     }
@@ -38,12 +46,13 @@ export function UserGuard({ children }: UserGuardProps) {
     } catch (error) {
       console.error("Error decoding token:", error);
       localStorage.removeItem("token"); // Clear invalid token
-      router.push("Paths.authPath()");
+      localStorage.removeItem("redirectAfterLogin"); // Clear any stored redirect
+      router.push(authPath);
       setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
-  }, [router]);
+  }, [router, authPath]);
 
   if (isLoading) {
     return <div>Loading...</div>; // Or a spinner
@@ -56,7 +65,6 @@ export function UserGuard({ children }: UserGuardProps) {
   return <>{children}</>;
 }
 
-// Optional: Create a basic Unauthorized page if you haven't already
 function UnauthorizedPage() {
   return (
     <div>
@@ -67,5 +75,4 @@ function UnauthorizedPage() {
   );
 }
 
-// You can export this as well if you want to use it directly as a page
 export { UnauthorizedPage };

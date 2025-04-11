@@ -29,16 +29,16 @@ export function Header() {
 
   const menuItems = (
     <Menubar>
-      <Link href="/house">
+      <Link href={Path.userHouseListPath()}>
         <MenubarMenu>House</MenubarMenu>
       </Link>
-      <Link href="/house">
+      <Link href="#contact">
         <MenubarMenu>Contact</MenubarMenu>
       </Link>
       <Link href={Path.authPath()}>
         <MenubarMenu>Login/Signup</MenubarMenu>
       </Link>
-      <Link href="/user">
+      <Link href="/user/dashboard">
         <MenubarMenu>Profiles</MenubarMenu>
       </Link>
       <MenubarMenu>
@@ -49,7 +49,7 @@ export function Header() {
 
   const mobileMenuItems = (
     <div className="flex flex-col space-y-4">
-      <Link href="/house">
+      <Link href={Path.userHouseListPath()}>
         <Button variant="ghost">House</Button>
       </Link>
       <Link href="/house">
@@ -58,7 +58,7 @@ export function Header() {
       <Link href={Path.authPath()}>
         <Button variant="ghost">Login/Signup</Button>
       </Link>
-      <Link href="/user">
+      <Link href="/user/dashboard">
         <Button variant="ghost">Profiles</Button>
       </Link>
       <LanguageSwitcher />
@@ -72,7 +72,7 @@ export function Header() {
         style={{ height: "64px" }}
       >
         <div className="flex items-center">
-          <Link href="/">
+          <Link href="/user">
             <Logo />
           </Link>
         </div>

@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { toast } from "react-hot-toast";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS
+import Paths from "@/lib/path"; // Assuming you have your paths defined here
 
 type DecodedToken = {
   role: "user" | "admin" | "super-admin";
@@ -20,6 +22,27 @@ export function AuthForm() {
   const [invitationCode, setInvitationCode] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+
+  const toastOptions = {
+    position: "top-right",
+    autoClose: 30000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  };
+
+  useEffect(() => {
+    // Check if there's a stored redirect path
+    const storedRedirect = localStorage.getItem("redirectAfterLogin");
+    if (storedRedirect) {
+      setRedirectTo(storedRedirect);
+      localStorage.removeItem("redirectAfterLogin"); // Clear it immediately after reading
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +70,8 @@ export function AuthForm() {
         const data = await res.json();
 
         if (!res.ok || !data.access_token) {
-          throw new Error(data.detail || "Authentication failed");
+          toast.error(data.detail || "Authentication failed", toastOptions);
+          return;
         }
 
         const token = data.access_token;
@@ -56,12 +80,14 @@ export function AuthForm() {
         const decoded = jwtDecode<DecodedToken>(token);
 
         console.log("Decoded token:", decoded); // Debugging line
+        toast.success("Sign in successful!", toastOptions);
         if (decoded.role === "admin") {
           router.push("/admin");
         } else if (decoded.role === "super-admin") {
           router.push("/super-admin");
         } else {
-          router.push("/user");
+          // Redirect to the stored path after successful login, or default to /user
+          router.push(redirectTo || "/user");
         }
       } else {
         const res = await fetch("http://127.0.0.1:8000/user/signup", {
@@ -81,14 +107,18 @@ export function AuthForm() {
         const data = await res.json();
 
         if (!res.ok || data.status !== "ok") {
-          throw new Error(data.msg || "Signup failed");
+          toast.error(data.msg || "Signup failed", toastOptions);
+          return;
         }
 
-        toast.success("Signup successful. Please log in.");
+        toast.success("Signup successful. Please log in.", toastOptions);
         setIsLogin(true);
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred. Please try again.");
+      toast.error(
+        err.message || "An error occurred. Please try again.",
+        toastOptions
+      );
     }
   };
 
@@ -203,6 +233,7 @@ export function AuthForm() {
           </div>
         </div>
       </form>
+      <ToastContainer {...toastOptions} />
     </div>
   );
 }
