@@ -67,7 +67,7 @@ export function UserProfile() {
         setUser(data);
         // Success toast with 5-second delay
         toast.success("Profile updated successfully!", {
-          autoClose: 5000, // Toast will stay for 5 seconds
+          autoClose: 3000, // Toast will stay for 5 seconds
           pauseOnHover: true, // Pause on hover
           draggable: true, // Allow drag
         });

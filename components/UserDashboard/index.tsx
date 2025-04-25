@@ -1,22 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { UserProfile } from "./UserProfile"
-import { PostedHouses } from "./PostedHouses"
-import { VisitRequests } from "./VisitRequests"
-import { RentedBoughtHouses } from "./RentedBoughtHouses"
-import { ActivityFeed } from "./ActivityFeed"
+import { useState } from "react";
+import { UserProfile } from "./UserProfile";
+import { PostedHouses } from "./Houses";
+import { VisitRequests } from "./VisitRequests";
 
 export function UserDashboard() {
-  const [activeTab, setActiveTab] = useState("profile")
+  const [activeTab, setActiveTab] = useState("profile");
 
   const tabs = [
     { id: "profile", label: "Profile" },
     { id: "posted", label: "Posted Houses" },
     { id: "visits", label: "Visit Requests" },
-    { id: "rented", label: "Rented/Bought Houses" },
-    { id: "activity", label: "Activity Feed" },
-  ]
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -27,7 +23,9 @@ export function UserDashboard() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`mr-2 mb-2 px-4 py-2 rounded ${
-              activeTab === tab.id ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              activeTab === tab.id
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
             {tab.label}
@@ -38,10 +36,7 @@ export function UserDashboard() {
         {activeTab === "profile" && <UserProfile />}
         {activeTab === "posted" && <PostedHouses />}
         {activeTab === "visits" && <VisitRequests />}
-        {activeTab === "rented" && <RentedBoughtHouses />}
-        {activeTab === "activity" && <ActivityFeed />}
       </div>
     </div>
-  )
+  );
 }
-

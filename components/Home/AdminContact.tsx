@@ -13,7 +13,7 @@ interface Admin {
   areas: string[];
 }
 
-const AdminSearch: React.FC = () => {
+const AdminSearchLayoutUpdate: React.FC = () => {
   const [locations, setLocations] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [admins, setAdmins] = useState<Admin[]>([]);
@@ -21,7 +21,7 @@ const AdminSearch: React.FC = () => {
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
 
-  // Fetch available locations from the backend
+  // Fetch available locations from the backend (functionality unchanged)
   useEffect(() => {
     const fetchLocations = async () => {
       try {
@@ -34,7 +34,7 @@ const AdminSearch: React.FC = () => {
     fetchLocations();
   }, []);
 
-  // Fetch admins by selected location
+  // Fetch admins by selected location (functionality unchanged)
   const handleSearch = async () => {
     if (!selectedLocation) return;
 
@@ -47,6 +47,7 @@ const AdminSearch: React.FC = () => {
         `http://127.0.0.1:8000/user/admins/search?area_name=${selectedLocation}`
       );
       setAdmins(response.data.admins);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Failed to fetch admins. Please try again later.");
     } finally {
@@ -55,99 +56,116 @@ const AdminSearch: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-6 px-4 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">Search Administrators by Area</h1>
+    <div className="container mx-auto py-8 px-6 max-w-xl">
+      <h1 className="text-3xl font-semibold mb-6 text-gray-800">
+        Find Administrators
+      </h1>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-8">
-        <div className="flex-1">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="relative flex-grow">
           <select
             value={selectedLocation}
             onChange={(e) => setSelectedLocation(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full py-2.5 px-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
-            <option value="">Select location</option>
+            <option value="">Select a location</option>
             {locations.map((loc) => (
               <option key={loc} value={loc}>
                 {loc}
               </option>
             ))}
           </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg
+              className="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
         </div>
         <button
           onClick={handleSearch}
           disabled={loading || !selectedLocation}
-          className={`px-4 py-2 rounded-md text-white font-medium flex items-center justify-center gap-2 ${
+          className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
             loading || !selectedLocation
-              ? "bg-blue-300 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          } transition-colors sm:w-auto min-w-[100px]`}
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-indigo-600 hover:bg-indigo-700"
+          }`}
         >
           {loading ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Searching</span>
-            </>
+            <Loader2 className="h-5 w-5 animate-spin mr-2" />
           ) : (
-            <>
-              <Search className="h-4 w-4" />
-              <span>Search</span>
-            </>
+            <Search className="h-5 w-5 mr-2" />
           )}
+          Search
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 p-4 rounded-md mb-6 border border-red-200">
-          {error}
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
+          role="alert"
+        >
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline">{error}</span>
         </div>
       )}
 
-      {/* Results Section */}
       {searched && !loading && !error && (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4">
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">
             {admins.length > 0
               ? `Administrators in ${selectedLocation}`
               : `No administrators found in ${selectedLocation}`}
           </h2>
 
           {admins.length > 0 ? (
-            <div className="divide-y divide-gray-200">
+            <ul className="divide-y divide-gray-200 rounded-md shadow-sm bg-white">
               {admins.map((admin) => (
-                <div key={admin.admin_id} className="py-4">
-                  <div className="flex flex-col sm:flex-row sm:justify-between">
+                <li key={admin.admin_id} className="py-4 px-4">
+                  <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-medium text-gray-800">
                         {admin.name}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-500">
                         {admin.admin_type}
                       </p>
                     </div>
-                    <div className="mt-2 sm:mt-0 text-sm text-gray-600">
+                    <p className="text-sm text-gray-600">
                       Phone: {admin.phone_no}
-                    </div>
+                    </p>
                   </div>
                   <div className="mt-2">
-                    <span className="text-sm text-gray-500">Areas:</span>
-                    <div className="mt-1 flex flex-wrap gap-2">
+                    <span className="inline-block text-sm font-medium text-gray-700 mb-1">
+                      Areas:
+                    </span>
+                    <div className="flex flex-wrap gap-2">
                       {admin.areas.map((area) => (
                         <span
                           key={area}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                          className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800"
                         >
                           {area}
                         </span>
                       ))}
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           ) : (
-            <p className="text-gray-500 py-4">
+            <div className="bg-white rounded-md shadow-sm p-4 text-gray-600">
               No administrators are assigned to this area.
-            </p>
+            </div>
           )}
         </div>
       )}
@@ -155,4 +173,4 @@ const AdminSearch: React.FC = () => {
   );
 };
 
-export default AdminSearch;
+export default AdminSearchLayoutUpdate;

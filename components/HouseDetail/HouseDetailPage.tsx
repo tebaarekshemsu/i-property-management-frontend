@@ -6,6 +6,7 @@ import { PhotoGallery } from "./PhotoGallery";
 import { VisitRequestForm } from "./VisitRequestForm";
 import { jwtDecode } from "jwt-decode";
 import Paths from "@/lib/path";
+import Footer from "@/components/reusable/Footer";
 
 interface DecodedToken {
   role?: string;
@@ -29,6 +30,8 @@ export function HouseDetailPage() {
         const data = await response.json();
         const house = Array.isArray(data) ? data[0] : {};
         setHouseData(house);
+
+        console.log(house);
       } catch (error) {
         console.error("Error fetching house details:", error);
       }
@@ -68,6 +71,47 @@ export function HouseDetailPage() {
       // Store the current path for redirection after login
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       router.push(authPath); // Redirect to login if no token
+    }
+  };
+
+  const handleVisitRequestSubmit = async (visitData: { visitDate: string }) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push(authPath); // Redirect to login if no token
+      return;
+    }
+
+    const requestData = {
+      house_id: house_id.id, // Include the house ID
+      request_date: visitData.visitDate,
+    };
+
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/user/visite-request",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+          },
+          body: JSON.stringify(requestData),
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Visit request submitted successfully:", result);
+        setShowVisitForm(false); // Close the form on success
+      } else {
+        const errorData = await response.json();
+        console.error(
+          "Error submitting visit request:",
+          errorData.detail || "An error occurred"
+        );
+      }
+    } catch (error) {
+      console.error("Network error:", error);
     }
   };
 
@@ -135,7 +179,7 @@ export function HouseDetailPage() {
                 <strong>Bedrooms:</strong> {mergedData.bedroom}
               </li>
               <li>
-                <strong>Toilets:</strong> {mergedData.toilet}
+                <strong>Toilets:</strong> {mergedData.toilets}
               </li>
               <li>
                 <strong>Bathrooms:</strong> {mergedData.bathroom}
@@ -197,9 +241,12 @@ export function HouseDetailPage() {
       {showVisitForm && (
         <VisitRequestForm
           onClose={() => setShowVisitForm(false)}
-          onSubmit={() => {}}
+          houseId={house_id} // Pass house ID to the form
+          onSubmit={handleVisitRequestSubmit} // Handle form submission
         />
       )}
+
+      <Footer />
     </div>
   );
 }
