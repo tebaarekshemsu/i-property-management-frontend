@@ -52,14 +52,15 @@ export function FilterSection() {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 md:mr-4">
+      {" "}
+      {/* Added md:mr-4 for right margin on medium and larger screens */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-2 md:hidden transition-all duration-300"
       >
         {isOpen ? "Hide Filters" : "Show Filters"}
       </button>
-
       <div
         className={`space-y-4 ${
           isOpen ? "block" : "hidden md:block"

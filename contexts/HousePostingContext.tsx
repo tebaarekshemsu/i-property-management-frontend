@@ -157,9 +157,15 @@ export function HousePostingProvider({ children }: { children: ReactNode }) {
 
       const apiUrl = "http://localhost:8000/user/house-post";
 
+      // Retrieve the token from localStorage (or wherever it's stored)
+      const token = localStorage.getItem("token");
+
       const response = await fetch(apiUrl, {
         method: "POST",
         body: formDataToSubmit,
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
       });
 
       if (!response.ok) {

@@ -32,9 +32,20 @@ export function UserGuard({ children }: UserGuardProps) {
     }
 
     try {
-      const decodedToken: { role?: string } = JSON.parse(
-        Buffer.from(token.split(".")[1], "base64").toString("utf-8")
-      );
+      const decodedToken: { role?: string; exp?: number } = token
+        ? JSON.parse(
+            Buffer.from(token.split(".")[1], "base64").toString("utf-8")
+          )
+        : {};
+
+      // Check if the token is expired
+      if (decodedToken?.exp && decodedToken.exp * 1000 < Date.now()) {
+        console.warn("Token has expired");
+        localStorage.removeItem("token"); // Remove expired token
+        router.push(authPath); // Redirect to login
+        setIsLoading(false);
+        return;
+      }
 
       if (decodedToken?.role !== "user") {
         router.push("/auth"); // Redirect if role is not "user"
@@ -46,7 +57,7 @@ export function UserGuard({ children }: UserGuardProps) {
     } catch (error) {
       console.error("Error decoding token:", error);
       localStorage.removeItem("token"); // Clear invalid token
-      router.push("Paths.authPath()");
+      router.push(authPath); // Redirect to login
       setIsLoading(false);
     } finally {
       setIsLoading(false);

@@ -3,16 +3,10 @@ import { useState } from "react";
 
 interface VisitRequestFormProps {
   onClose: () => void;
-  onSubmit: (data: {
-    name: string;
-    phoneNumber: string;
-    visitDate: string;
-  }) => void;
+  houseId: number; // Pass the house ID as a prop
 }
 
-export function VisitRequestForm({ onClose }: VisitRequestFormProps) {
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+export function VisitRequestForm({ onClose, houseId }: VisitRequestFormProps) {
   const [visitDate, setVisitDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,18 +14,20 @@ export function VisitRequestForm({ onClose }: VisitRequestFormProps) {
 
     // Prepare data to send to the backend
     const requestData = {
-      name,
-      phoneNumber,
-      visitDate,
+      house_id: houseId,
+      request_date: visitDate,
     };
 
     try {
+      const token = localStorage.getItem("token"); // Retrieve the token from localStorage or another storage mechanism
+
       const response = await fetch(
         "http://127.0.0.1:8000/user/visite-request",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
           },
           body: JSON.stringify(requestData),
         }
@@ -43,7 +39,7 @@ export function VisitRequestForm({ onClose }: VisitRequestFormProps) {
         onClose(); // Close the form on success
       } else {
         const errorData = await response.json();
-        console.error("Error:", errorData.message);
+        console.error("Error:", errorData.detail || "An error occurred");
       }
     } catch (error) {
       console.error("Network error:", error);
@@ -55,39 +51,6 @@ export function VisitRequestForm({ onClose }: VisitRequestFormProps) {
       <div className="bg-white p-8 rounded-lg max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4">Request a Visit</h2>
         <form onSubmit={handleSubmit}>
-          {/* Form fields remain the same */}
-          <div className="mb-4">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="phoneNumber"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            />
-          </div>
           <div className="mb-4">
             <label
               htmlFor="visitDate"

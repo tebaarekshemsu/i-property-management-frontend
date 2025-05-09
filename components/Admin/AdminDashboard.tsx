@@ -8,7 +8,7 @@ import { DollarSign, Users, Home, Calendar } from "lucide-react"
 
 interface DashboardStats {
   totalRevenue: number
-  totalUsers: number
+  pendingReports: number
   totalHouses: number
   pendingVisits: number
   successRate: number
@@ -18,7 +18,7 @@ export function AdminDashboard() {
 //   const { t } = useLanguage()
   const [stats, setStats] = useState<DashboardStats>({
     totalRevenue: 0,
-    totalUsers: 0,
+    pendingReports: 0,
     totalHouses: 0,
     pendingVisits: 0,
     successRate: 0,
@@ -41,7 +41,7 @@ export function AdminDashboard() {
         // Mock data
         const data = {
           totalRevenue: 125000,
-          totalUsers: 350,
+          pendingReports: 35,
           totalHouses: 120,
           pendingVisits: 15,
           successRate: 78,
@@ -72,8 +72,8 @@ export function AdminDashboard() {
           color="bg-green-100"
         />
         <StatCard
-          title={("totalUsers")}
-          value={stats.totalUsers.toString()}
+          title={("pendingReports")}
+          value={stats.pendingReports.toString()}
           icon={<Users className="w-8 h-8 text-blue-500" />}
           color="bg-blue-100"
         />

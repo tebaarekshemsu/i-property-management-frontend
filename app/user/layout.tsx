@@ -1,6 +1,6 @@
 import type React from "react";
 import { Header } from "@/components/reusable/header";
-import Footer from "@/components/reusable/Footer";
+
 export default function UserLayout({
   children,
 }: {
@@ -10,7 +10,6 @@ export default function UserLayout({
     <>
       <Header />
       <div style={{ marginTop: "20px" }}>{children}</div>
-      <Footer />
     </>
   );
 }
