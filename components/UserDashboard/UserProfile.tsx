@@ -3,9 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for react-toastify
+import { API_ENDPOINTS } from "@/config/api";
+import { api } from "@/utils/api";
+
+interface UserProfile {
+  name: string;
+  invitation_code: string;
+  phone_no: string;
+  address: string;
+}
 
 export function UserProfile() {
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<UserProfile>({
     name: "",
     invitation_code: "",
     phone_no: "",
@@ -13,7 +22,7 @@ export function UserProfile() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
-  const [token, setToken] = useState<string | null>(null); // Initially null
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
@@ -25,23 +34,22 @@ export function UserProfile() {
 
     const fetchUserData = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/user/profile", {
-          method: "GET",
+        const { data, error } = await api.get<UserProfile>(API_ENDPOINTS.USER.PROFILE, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        console.log(res);
-
-        const data = await res.json();
-        if (res.ok) {
-          setUser(data);
-        } else {
-          console.error(data.message);
+        if (error) {
+          console.error(error);
+          toast.error("Failed to fetch user data");
+          return;
         }
+
+        setUser(data);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        toast.error("An error occurred while fetching user data");
       }
     };
 
@@ -53,38 +61,30 @@ export function UserProfile() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/user/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(user),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIsEditing(false);
-        setUser(data);
-        // Success toast with 5-second delay
-        toast.success("Profile updated successfully!", {
-          autoClose: 3000, // Toast will stay for 5 seconds
-          pauseOnHover: true, // Pause on hover
-          draggable: true, // Allow drag
-        });
-      } else {
-        toast.error(data.message || "Failed to update profile.", {
-          autoClose: 5000, // Toast will stay for 5 seconds
-          pauseOnHover: true, // Pause on hover
-          draggable: true, // Allow drag
-        });
-        console.error(data.message);
+      const { data, error } = await api.put<UserProfile>(
+        API_ENDPOINTS.USER.PROFILE,
+        user,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (error) {
+        toast.error(error || "Failed to update profile");
+        return;
       }
-    } catch (error) {
-      toast.error("An error occurred while updating profile.", {
-        autoClose: 5000, // Toast will stay for 5 seconds
-        pauseOnHover: true, // Pause on hover
-        draggable: true, // Allow drag
+
+      setIsEditing(false);
+      setUser(data);
+      toast.success("Profile updated successfully!", {
+        autoClose: 3000,
+        pauseOnHover: true,
+        draggable: true,
       });
+    } catch (error) {
+      toast.error("An error occurred while updating profile");
       console.error("Error updating user data:", error);
     }
   };
@@ -188,7 +188,6 @@ export function UserProfile() {
           </button>
         </div>
       )}
-      {/* Add ToastContainer here */}
       <ToastContainer />
     </div>
   );

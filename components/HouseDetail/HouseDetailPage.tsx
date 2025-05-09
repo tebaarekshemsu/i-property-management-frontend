@@ -7,15 +7,37 @@ import { VisitRequestForm } from "./VisitRequestForm";
 import { jwtDecode } from "jwt-decode";
 import Paths from "@/lib/path";
 import Footer from "@/components/reusable/Footer";
+import { API_ENDPOINTS } from "@/config/api";
+import { api } from "@/utils/api";
 
 interface DecodedToken {
   role?: string;
 }
 
+interface HouseData {
+  name: string;
+  image_urls: string[];
+  category: string;
+  location: string;
+  address: string;
+  size: string;
+  condition: string;
+  bedroom: string;
+  toilet: string;
+  bathroom: string;
+  property_type: string;
+  furnish_status: string;
+  parking_space: boolean;
+  price: number;
+  negotiability: string;
+  facilities: string[];
+  description: string;
+}
+
 export function HouseDetailPage() {
   const router = useRouter();
   const house_id = useParams();
-  const [houseData, setHouseData] = useState(null);
+  const [houseData, setHouseData] = useState<HouseData | null>(null);
   const [showVisitForm, setShowVisitForm] = useState(false);
   const [isAuthenticatedUser, setIsAuthenticatedUser] = useState(false);
   const authPath = Paths.authPath();
@@ -23,15 +45,24 @@ export function HouseDetailPage() {
   useEffect(() => {
     const fetchHouseDetail = async () => {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8000/user/house/${house_id.id}`
+        const { data, error } = await api.get<HouseData[]>(
+          API_ENDPOINTS.USER.HOUSE_DETAIL(house_id.id as string),
+          {
+            cacheConfig: {
+              key: `house-${house_id.id}`,
+              ttl: 5 * 60 * 1000, // Cache for 5 minutes
+              refresh: false // Set to true to force refresh
+            }
+          }
         );
-        if (!response.ok) throw new Error("House not found");
-        const data = await response.json();
-        const house = Array.isArray(data) ? data[0] : {};
-        setHouseData(house);
 
-        console.log(house);
+        if (error) {
+          console.error("Error fetching house details:", error);
+          return;
+        }
+
+        const house = Array.isArray(data) ? data[0] : defaultValues;
+        setHouseData(house);
       } catch (error) {
         console.error("Error fetching house details:", error);
       }
@@ -61,55 +92,51 @@ export function HouseDetailPage() {
         if (decodedToken?.role === "user") {
           setShowVisitForm(true);
         } else {
-          router.push("/unauthorized"); // Or display a message
+          router.push("/unauthorized");
         }
       } catch (error) {
         console.error("Error decoding token:", error);
-        router.push(authPath); // Redirect to login if token is invalid
+        router.push(authPath);
       }
     } else {
-      // Store the current path for redirection after login
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
-      router.push(authPath); // Redirect to login if no token
+      router.push(authPath);
     }
   };
 
   const handleVisitRequestSubmit = async (visitData: { visitDate: string }) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      router.push(authPath); // Redirect to login if no token
+      router.push(authPath);
       return;
     }
 
     const requestData = {
-      house_id: house_id.id, // Include the house ID
+      house_id: house_id.id,
       request_date: visitData.visitDate,
     };
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/user/visite-request",
+      const { error } = await api.post(
+        API_ENDPOINTS.USER.VISIT_REQUEST,
+        requestData,
         {
-          method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(requestData),
+          revalidate: {
+            path: `/user/house/${house_id.id}`,
+            tag: `house-${house_id.id}`
+          }
         }
       );
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Visit request submitted successfully:", result);
-        setShowVisitForm(false); // Close the form on success
-      } else {
-        const errorData = await response.json();
-        console.error(
-          "Error submitting visit request:",
-          errorData.detail || "An error occurred"
-        );
+      if (error) {
+        console.error("Error submitting visit request:", error);
+        return;
       }
+
+      setShowVisitForm(false);
     } catch (error) {
       console.error("Network error:", error);
     }
@@ -120,7 +147,7 @@ export function HouseDetailPage() {
   }
 
   // Default values
-  const defaultValues = {
+  const defaultValues: HouseData = {
     name: `${house_id.id}`,
     image_urls: [
       "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
@@ -179,7 +206,7 @@ export function HouseDetailPage() {
                 <strong>Bedrooms:</strong> {mergedData.bedroom}
               </li>
               <li>
-                <strong>Toilets:</strong> {mergedData.toilets}
+                <strong>Toilets:</strong> {mergedData.toilet}
               </li>
               <li>
                 <strong>Bathrooms:</strong> {mergedData.bathroom}
@@ -241,8 +268,8 @@ export function HouseDetailPage() {
       {showVisitForm && (
         <VisitRequestForm
           onClose={() => setShowVisitForm(false)}
-          houseId={house_id} // Pass house ID to the form
-          onSubmit={handleVisitRequestSubmit} // Handle form submission
+          houseId={house_id.id as string}
+          onSubmit={handleVisitRequestSubmit}
         />
       )}
 

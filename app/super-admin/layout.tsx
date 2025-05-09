@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { SuperAdminSidebar } from "@/components/SuperAdmin/SuperAdminSidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
-import { LanguageProvider } from "@/components/language-provider"
+import { LanguageProvider } from "@/contexts/LanguageContext"
 
 export default async function SuperAdminLayout({
   children,
@@ -11,7 +11,7 @@ export default async function SuperAdminLayout({
   children: React.ReactNode
 }) {
   const cookieStore = cookies()
-  const lang = (await cookieStore).get("lang")?.value || "en"
+  const lang = (cookieStore.get("lang")?.value || "en") as "en" | "am"
 
   return (
     <LanguageProvider lang={lang}>

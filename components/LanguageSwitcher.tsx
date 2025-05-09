@@ -2,7 +2,7 @@
 
 import { Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/contexts/LanguageContext"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function LanguageSwitcher({ iconOnly = false }: { iconOnly?: boolean }) {

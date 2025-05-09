@@ -2,7 +2,7 @@ import type React from "react"
 import { AdminSidebar } from "@/components/Admin/AdminSidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
-import { LanguageProvider } from "@/components/language-provider"
+import { LanguageProvider } from "@/contexts/LanguageContext"
 
 export default async function AdminLayout({
   children,
