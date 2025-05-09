@@ -1,49 +1,20 @@
 import type React from "react";
 import { useState } from "react";
+import { API_ENDPOINTS } from "@/config/api";
+import { api } from "@/utils/api";
 
 interface VisitRequestFormProps {
   onClose: () => void;
-  houseId: number; // Pass the house ID as a prop
+  houseId: string;
+  onSubmit: (data: { visitDate: string }) => Promise<void>;
 }
 
-export function VisitRequestForm({ onClose, houseId }: VisitRequestFormProps) {
+export function VisitRequestForm({ onClose, houseId, onSubmit }: VisitRequestFormProps) {
   const [visitDate, setVisitDate] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Prepare data to send to the backend
-    const requestData = {
-      house_id: houseId,
-      request_date: visitDate,
-    };
-
-    try {
-      const token = localStorage.getItem("token"); // Retrieve the token from localStorage or another storage mechanism
-
-      const response = await fetch(
-        "http://127.0.0.1:8000/user/visite-request",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
-          },
-          body: JSON.stringify(requestData),
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Success:", result);
-        onClose(); // Close the form on success
-      } else {
-        const errorData = await response.json();
-        console.error("Error:", errorData.detail || "An error occurred");
-      }
-    } catch (error) {
-      console.error("Network error:", error);
-    }
+    await onSubmit({ visitDate });
   };
 
   return (

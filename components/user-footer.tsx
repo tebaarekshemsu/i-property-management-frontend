@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { Building } from "lucide-react"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 export default function UserFooter() {
   const { dictionary } = useLanguage()

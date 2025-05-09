@@ -4,9 +4,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 
-// import { cn } from "@/lib/utils";
-// import { LanguageProvider } from "@/components/language-provider";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,7 +20,7 @@ export default async function RootLayout({
   const lang = (await cookieStore).get("lang")?.value || "en";
 
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body className={`${inter.className} antialiased`}>
         <div>{children}</div>
       </body>

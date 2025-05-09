@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Logo } from "@/public/Logo"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/contexts/LanguageContext"
 import { useMemo } from "react"
 
 export function SuperAdminSidebar() {
