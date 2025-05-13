@@ -1,14 +1,38 @@
+"use client";
+
 import type React from "react"
 import { AdminSidebar } from "@/components/Admin/AdminSidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { LanguageProvider } from "@/contexts/LanguageContext"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { authService } from "@/lib/services/auth.service"
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("token")
+      if (!token) {
+        router.push("/auth")
+        return
+      }
+
+      const decoded = authService.decodeToken(token)
+      if (decoded.role !== "admin") {
+        router.push("/auth")
+      }
+    }
+
+    checkAuth()
+  }, [router])
+
   return (
     <LanguageProvider lang={"en"}>
       <SidebarProvider>

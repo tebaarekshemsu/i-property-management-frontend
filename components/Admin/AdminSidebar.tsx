@@ -14,6 +14,7 @@ import {
   Globe,
 } from "lucide-react"
 import Link from "next/link"
+import { authService } from "@/lib/services/auth.service"
 
 import {
   Sidebar,
@@ -49,7 +50,6 @@ export function AdminSidebar() {
         dictionary: {
           admin: {
             dashboard: "Dashboard",
-            users: "Users",
             properties: "Properties",
             transactions: "Transactions",
             messages: "Messages",
@@ -70,11 +70,6 @@ export function AdminSidebar() {
       name: dictionary.admin.dashboard,
       href: "/admin",
       icon: BarChart,
-    },
-    {
-      name: dictionary.admin.users,
-      href: "/admin/users",
-      icon: Users,
     },
     {
       name: dictionary.admin.properties,
@@ -98,6 +93,11 @@ export function AdminSidebar() {
     },
   ]
 
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    authService.logout();
+  };
+
   const footerNavigation = [
     {
       name: dictionary.admin.profile,
@@ -111,8 +111,9 @@ export function AdminSidebar() {
     },
     {
       name: dictionary.navigation.logout,
-      href: "/logout",
+      href: "#",
       icon: LogOut,
+      onClick: handleLogout,
     },
   ]
 
@@ -120,7 +121,7 @@ export function AdminSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="flex items-center justify-center p-4">
         <div className="flex items-center space-x-2">
-          <Logo/>
+          <Logo />
         </div>
       </SidebarHeader>
       <SidebarSeparator />
@@ -156,7 +157,11 @@ export function AdminSidebar() {
           <SidebarSeparator />
           {footerNavigation.map((item) => (
             <SidebarMenuItem key={item.name}>
-              <SidebarMenuButton asChild tooltip={item.name}>
+              <SidebarMenuButton
+                asChild
+                tooltip={item.name}
+                onClick={item.onClick}
+              >
                 <Link href={item.href}>
                   <item.icon />
                   <span>{item.name}</span>

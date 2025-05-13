@@ -15,8 +15,35 @@ import {
   ClipboardCheck,
 } from "lucide-react";
 
+interface House {
+  house_id: number;
+  category: string;
+  location: string;
+  address: string;
+  size: number;
+  condition: string;
+  bedroom: number;
+  toilets: number;
+  bathroom: number;
+  property_type: string;
+  furnish_status: string;
+  facility: string;
+  description: string;
+  price: number;
+  negotiability: string;
+  parking_space: boolean;
+  listed_by: string;
+  status: string;
+  image_urls: string[];
+  video: string | null;
+  vip_status: {
+    duration: number;
+    price: number;
+  };
+}
+
 export function HouseList() {
-  const [houses, setHouses] = useState<unknown[]>([]);
+  const [houses, setHouses] = useState<House[]>([]);
   const placeholder = [
     {
       id: 1,
@@ -106,7 +133,7 @@ export function HouseList() {
           throw new Error("Failed to fetch houses");
         }
         const data = await response.json();
-        setHouses(data.featured_houses);
+        setHouses(data);
       } catch (error) {
         setHouses(placeholder);
         console.error("Error fetching houses:", error);
@@ -233,13 +260,12 @@ export function HouseList() {
               {services.map((_, idx) => (
                 <div
                   key={idx}
-                  className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                    idx === currentSlide ||
+                  className={`w-2.5 h-2.5 rounded-full transition-colors ${idx === currentSlide ||
                     idx === (currentSlide + 1) % services.length ||
                     idx === (currentSlide + 2) % services.length
-                      ? "bg-blue-500"
-                      : "bg-gray-300"
-                  }`}
+                    ? "bg-blue-500"
+                    : "bg-gray-300"
+                    }`}
                   aria-label={`Slide ${idx + 1}`}
                 />
               ))}
@@ -274,9 +300,18 @@ export function HouseList() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
             {loading
               ? Array.from({ length: 6 }).map((_, index) => (
-                  <ShimmerCard key={index} />
-                ))
-              : houses.map((house) => <HouseCard key={house.id} {...house} />)}
+                <ShimmerCard key={index} />
+              ))
+              : houses.map((house) => (
+                <HouseCard
+                  key={house.house_id}
+                  id={house.house_id}
+                  name={house.address}
+                  price={house.price}
+                  description={house.description}
+                  imageUrl={house.image_urls[0] || "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp"}
+                />
+              ))}
           </div>
         </div>
       </div>

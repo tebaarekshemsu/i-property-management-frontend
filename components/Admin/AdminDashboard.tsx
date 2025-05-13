@@ -5,6 +5,9 @@ import type React from "react"
 import { useState, useEffect } from "react"
 //import { useLanguage } from "@/contexts/LanguageContext"
 import { DollarSign, Users, Home, Calendar } from "lucide-react"
+import { adminService } from "@/lib/services/admin.service"
+import { authService } from "@/lib/services/auth.service"
+import { Button } from "@/components/ui/button"
 
 interface DashboardStats {
   totalRevenue: number
@@ -12,51 +15,61 @@ interface DashboardStats {
   totalHouses: number
   pendingVisits: number
   successRate: number
+  recentTransactions: Array<{
+    id: number
+    house: string
+    amount: number
+    date: string
+    type: string
+  }>
+}
+
+const defaultStats: DashboardStats = {
+  totalRevenue: 0,
+  pendingReports: 0,
+  totalHouses: 0,
+  pendingVisits: 0,
+  successRate: 0,
+  recentTransactions: []
 }
 
 export function AdminDashboard() {
-//   const { t } = useLanguage()
-  const [stats, setStats] = useState<DashboardStats>({
-    totalRevenue: 0,
-    pendingReports: 0,
-    totalHouses: 0,
-    pendingVisits: 0,
-    successRate: 0,
-  })
+  //   const { t } = useLanguage()
+  const [stats, setStats] = useState<DashboardStats>(defaultStats)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch dashboard data from API
-    // This is a mock implementation
     const fetchData = async () => {
       try {
-        // In a real app, you would fetch data from your API
-        // const response = await fetch('/api/admin/dashboard', {
-        //   headers: {
-        //     'Authorization': `Bearer ${token}`
-        //   }
-        // });
-        // const data = await response.json();
-
-        // Mock data
-        const data = {
-          totalRevenue: 125000,
-          pendingReports: 35,
-          totalHouses: 120,
-          pendingVisits: 15,
-          successRate: 78,
+        const token = localStorage.getItem("token");
+        if (!token || authService.isTokenExpired(token)) {
+          authService.logout();
+          return;
         }
 
-        setStats(data)
-        setLoading(false)
+        const data = await adminService.getDashboardData();
+        setStats({
+          totalRevenue: parseFloat(data?.totalRevenue ?? "0"),
+          pendingReports: parseInt(data?.pendingReports ?? "0"),
+          totalHouses: parseInt(data?.totalHouses ?? "0"),
+          pendingVisits: parseInt(data?.pendingVisits ?? "0"),
+          successRate: parseFloat(data?.successRate ?? "0"),
+          recentTransactions: data?.recentTransactions ?? []
+        });
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching dashboard data:", error)
-        setLoading(false)
+        console.error("Error fetching dashboard data:", error);
+        if (error instanceof Error && error.message.includes('401')) {
+          authService.logout();
+          return;
+        }
+        setStats(defaultStats);
+        setLoading(false);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   if (loading) {
     return <div className="text-center py-10">{("loading")}...</div>
@@ -111,7 +124,7 @@ export function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <RecentTransactionsCard />
+        <RecentTransactionsCard transactions={stats.recentTransactions} />
       </div>
     </div>
   )
@@ -136,17 +149,7 @@ function StatCard({
   )
 }
 
-function RecentTransactionsCard() {
-//   const { t } = useLanguage()
-
-  // Mock data
-  const transactions = [
-    { id: 1, house: "Modern Apartment", amount: 250000, date: "2023-06-15", type: "sale" },
-    { id: 2, house: "Cozy Cottage", amount: 1500, date: "2023-06-12", type: "rent" },
-    { id: 3, house: "Luxury Villa", amount: 500000, date: "2023-06-10", type: "sale" },
-    { id: 4, house: "City Apartment", amount: 1800, date: "2023-06-08", type: "rent" },
-  ]
-
+function RecentTransactionsCard({ transactions }: { transactions: DashboardStats['recentTransactions'] }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h2 className="text-xl font-semibold mb-4">{("recentTransactions")}</h2>
@@ -168,9 +171,8 @@ function RecentTransactionsCard() {
                 <td className="py-2 px-4">{transaction.date}</td>
                 <td className="py-2 px-4">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      transaction.type === "sale" ? "bg-green-200 text-green-800" : "bg-blue-200 text-blue-800"
-                    }`}
+                    className={`px-2 py-1 rounded-full text-xs ${transaction.type === "sale" ? "bg-green-200 text-green-800" : "bg-blue-200 text-blue-800"
+                      }`}
                   >
                     {transaction.type}
                   </span>
@@ -185,7 +187,7 @@ function RecentTransactionsCard() {
 }
 
 function TopAgentsCard() {
-//   const { t } = useLanguage()
+  //   const { t } = useLanguage()
 
   // Mock data
   const agents = [

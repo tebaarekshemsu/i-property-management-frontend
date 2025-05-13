@@ -61,4 +61,18 @@ export const authService = {
   decodeToken(token: string): DecodedToken {
     return jwtDecode<DecodedToken>(token);
   },
+
+  logout: () => {
+    localStorage.removeItem("token");
+    window.location.href = "/auth";
+  },
+
+  isTokenExpired: (token: string) => {
+    try {
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      return decoded.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
+  }
 }; 
