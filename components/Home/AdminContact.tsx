@@ -14,8 +14,13 @@ interface Admin {
   areas: string[];
 }
 
+interface Location {
+  code: number;
+  name: string;
+}
+
 const AdminSearchLayoutUpdate: React.FC = () => {
-  const [locations, setLocations] = useState<string[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,14 +31,9 @@ const AdminSearchLayoutUpdate: React.FC = () => {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const res = await api.get(API_ENDPOINTS.LOCATIONS);
-        if (res.data && Array.isArray(res.data.locations)) {
-          setLocations(res.data.locations);
-        } else {
-          console.error("Invalid locations data format:", res.data);
-          toast.error("Failed to load locations");
-        }
-      } catch (error: any) {
+        const res = await axios.get("http://127.0.0.1:8000/user/locations");
+        setLocations(res.data.locations);
+      } catch (error) {
         console.error("Failed to fetch locations", error);
         toast.error(error.response?.data?.message || "Failed to load locations");
       }
@@ -86,8 +86,8 @@ const AdminSearchLayoutUpdate: React.FC = () => {
           >
             <option value="">Select a location</option>
             {locations.map((loc) => (
-              <option key={loc} value={loc}>
-                {loc}
+              <option key={loc.code} value={loc.name}>
+                {loc.name}
               </option>
             ))}
           </select>
@@ -110,11 +110,10 @@ const AdminSearchLayoutUpdate: React.FC = () => {
         <button
           onClick={handleSearch}
           disabled={loading || !selectedLocation}
-          className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-            loading || !selectedLocation
+          className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${loading || !selectedLocation
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-indigo-600 hover:bg-indigo-700"
-          }`}
+            }`}
         >
           {loading ? (
             <Loader2 className="h-5 w-5 animate-spin mr-2" />
