@@ -2,8 +2,9 @@
 
 import type React from "react";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Search, Loader2 } from "lucide-react";
+import { api, API_ENDPOINTS } from "@/config/api";
+import { toast } from "react-hot-toast";
 
 interface Admin {
   admin_id: string;
@@ -21,20 +22,26 @@ const AdminSearchLayoutUpdate: React.FC = () => {
   const [error, setError] = useState("");
   const [searched, setSearched] = useState(false);
 
-  // Fetch available locations from the backend (functionality unchanged)
+  // Fetch available locations from the backend
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/user/locations");
-        setLocations(res.data.locations);
-      } catch (error) {
+        const res = await api.get(API_ENDPOINTS.LOCATIONS);
+        if (res.data && Array.isArray(res.data.locations)) {
+          setLocations(res.data.locations);
+        } else {
+          console.error("Invalid locations data format:", res.data);
+          toast.error("Failed to load locations");
+        }
+      } catch (error: any) {
         console.error("Failed to fetch locations", error);
+        toast.error(error.response?.data?.message || "Failed to load locations");
       }
     };
     fetchLocations();
   }, []);
 
-  // Fetch admins by selected location (functionality unchanged)
+  // Fetch admins by selected location
   const handleSearch = async () => {
     if (!selectedLocation) return;
 
@@ -43,13 +50,22 @@ const AdminSearchLayoutUpdate: React.FC = () => {
     setSearched(true);
 
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/user/admins/search?area_name=${selectedLocation}`
-      );
-      setAdmins(response.data.admins);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      setError("Failed to fetch admins. Please try again later.");
+      const response = await api.get(`${API_ENDPOINTS.ADMIN_SEARCH}?area_name=${selectedLocation}`);
+      
+      if (response.data && Array.isArray(response.data.admins)) {
+        setAdmins(response.data.admins);
+        if (response.data.admins.length === 0) {
+          toast.info(`No administrators found in ${selectedLocation}`);
+        }
+      } else {
+        console.error("Invalid admins data format:", response.data);
+        toast.error("Invalid response format from server");
+      }
+    } catch (err: any) {
+      console.error("Error fetching admins:", err);
+      const errorMessage = err.response?.data?.message || "Failed to fetch admins. Please try again later.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
