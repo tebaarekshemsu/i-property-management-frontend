@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HouseCard } from "../reusable/HouseCard";
 import { ShimmerCard } from "../reusable/ShimmerCard";
 import Paths from "@/lib/path";
+import { api } from "@/config/api";
+import { API_ENDPOINTS } from "@/config/api";
 import {
   Home,
   Calendar,
@@ -42,46 +44,14 @@ interface House {
   };
 }
 
+interface ApiResponse {
+  houses: House[];
+}
+
 export function HouseList() {
   const [houses, setHouses] = useState<House[]>([]);
-  const placeholder = [
-    {
-      id: 1,
-      price: 14561,
-      description: "a greate house for us",
-      imageUrl:
-        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
-    },
-    {
-      id: 1,
-      price: 14561,
-      description: "a greate house for us",
-      imageUrl:
-        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
-    },
-    {
-      id: 1,
-      price: 14561,
-      description: "a greate house for us",
-      imageUrl:
-        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
-    },
-    {
-      id: 1,
-      price: 14561,
-      description: "a greate house for us",
-      imageUrl:
-        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
-    },
-    {
-      id: 1,
-      price: 14561,
-      description: "a greate house for us",
-      imageUrl:
-        "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
-    },
-  ];
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // State for the service carousel
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -128,15 +98,19 @@ export function HouseList() {
   useEffect(() => {
     async function fetchHouses() {
       try {
-        const response = await fetch("http://127.0.0.1:8000/user/vip-houses");
-        if (!response.ok) {
-          throw new Error("Failed to fetch houses");
+        const response = await api.get(API_ENDPOINTS.VIP_HOUSES);
+        // Handle both array and object responses
+        const housesData = Array.isArray(response.data) ? response.data : (response.data?.houses || []);
+        
+        if (Array.isArray(housesData)) {
+          setHouses(housesData);
+        } else {
+          console.error("Invalid response format:", response.data);
+          setError("Failed to load houses");
         }
-        const data = await response.json();
-        setHouses(data);
       } catch (error) {
-        setHouses(placeholder);
         console.error("Error fetching houses:", error);
+        setError("Failed to load houses. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -305,7 +279,7 @@ export function HouseList() {
               : houses.map((house) => (
                 <HouseCard
                   key={house.house_id}
-                  id={house.house_id}
+                  id={house.house_id.toString()}
                   name={house.address}
                   price={house.price}
                   description={house.description}

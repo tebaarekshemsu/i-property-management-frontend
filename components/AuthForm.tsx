@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft } from "lucide-react";
+import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FormInput } from "./reusable/FormInput";
@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/hooks/useAuth";
 
 export function AuthForm() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const {
     isLogin,
     setIsLogin,
@@ -21,11 +22,21 @@ export function AuthForm() {
     invitationCode,
     setInvitationCode,
     error,
-    handleSubmit,
+    handleSubmit: originalHandleSubmit,
   } = useAuth();
 
   const handleBack = () => {
     router.push("/user");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await originalHandleSubmit(e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -34,6 +45,7 @@ export function AuthForm() {
         <button
           onClick={handleBack}
           className="absolute top-4 left-4 text-gray-500 hover:text-gray-700 focus:outline-none"
+          disabled={isLoading}
         >
           <ArrowLeft className="h-6 w-6" />
           <span className="sr-only">Go back to homepage</span>
@@ -54,6 +66,7 @@ export function AuthForm() {
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Full Name"
+                  disabled={isLoading}
                 />
                 <FormInput
                   id="invitation_code"
@@ -63,6 +76,7 @@ export function AuthForm() {
                   value={invitationCode}
                   onChange={(e) => setInvitationCode(e.target.value)}
                   placeholder="Invitation Code"
+                  disabled={isLoading}
                 />
               </>
             )}
@@ -75,6 +89,7 @@ export function AuthForm() {
               onChange={(e) => setIdentifier(e.target.value)}
               required
               placeholder="Enter your phone number"
+              disabled={isLoading}
             />
             <FormInput
               id="password"
@@ -86,6 +101,7 @@ export function AuthForm() {
               required
               autoComplete="current-password"
               placeholder="Password"
+              disabled={isLoading}
             />
           </div>
 
@@ -99,15 +115,24 @@ export function AuthForm() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLogin ? "Sign in" : "Sign up"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                  {isLogin ? "Signing in..." : "Signing up..."}
+                </>
+              ) : (
+                isLogin ? "Sign in" : "Sign up"
+              )}
             </button>
             <div className="text-center mt-4">
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-blue-600 hover:text-blue-500"
+                disabled={isLoading}
+                className="text-sm text-blue-600 hover:text-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLogin
                   ? "Don't have an account? Sign up"

@@ -1,479 +1,409 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState, useEffect } from "react"
-// import { useLanguage } from "@/contexts/LanguageContext"
-import { Plus, Edit, Trash } from "lucide-react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 interface Admin {
-  id: string
-  name: string
-  email: string
-  phone: string
-  role: "admin" | "senior_admin"
-  status: "active" | "inactive"
-  dateAdded: string
-  transactions: number
-  successRate: number
+  admin_id: number;
+  name: string;
+  phone_no: string;
+  area_codes: string[];
+}
+
+interface Location {
+  area_code: string;
+  name: string;
 }
 
 export function AdminManagement() {
-  // const { t } = useLanguage()
-  const [admins, setAdmins] = useState<Admin[]>([])
-  const [loading, setLoading] = useState(true)
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
-  const [formData, setFormData] = useState({
+  const [admins, setAdmins] = useState<Admin[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [newAdmin, setNewAdmin] = useState({
     name: "",
-    email: "",
-    phone: "",
-    role: "admin",
-    status: "active",
-  })
+    phone_no: "",
+    area_codes: [] as string[],
+    id_front: null as File | null, // Changed to File | null
+    id_back: null as File | null, // Changed to File | null
+    admin_type: "admin",
+    password: "",
+  });
+  const [newLocation, setNewLocation] = useState({
+    area_code: "",
+    name: "",
+  });
 
   useEffect(() => {
-    // Fetch admins from API
-    // This is a mock implementation
-    const fetchData = async () => {
-      try {
-        // In a real app, you would fetch data from your API
-        // const response = await fetch('/api/super-admin/admins', {
-        //   headers: {
-        //     'Authorization': `Bearer ${token}`
-        //   }
-        // });
-        // const data = await response.json();
+    fetchData();
+  }, []);
 
-        // Mock data
-        const data: Admin[] = [
-          {
-            id: "1",
-            name: "John Doe",
-            email: "john@example.com",
-            phone: "+1234567890",
-            role: "admin",
-            status: "active",
-            dateAdded: "2023-01-15",
-            transactions: 45,
-            successRate: 92,
-          },
-          {
-            id: "2",
-            name: "Jane Smith",
-            email: "jane@example.com",
-            phone: "+0987654321",
-            role: "senior_admin",
-            status: "active",
-            dateAdded: "2023-02-20",
-            transactions: 38,
-            successRate: 88,
-          },
-          {
-            id: "3",
-            name: "Robert Johnson",
-            email: "robert@example.com",
-            phone: "+1122334455",
-            role: "admin",
-            status: "inactive",
-            dateAdded: "2023-03-10",
-            transactions: 32,
-            successRate: 85,
-          },
-        ]
-
-        setAdmins(data)
-        setLoading(false)
-      } catch (error) {
-        console.error("Error fetching admins:", error)
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-  const handleAddAdmin = () => {
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      role: "admin",
-      status: "active",
-    })
-    setShowAddModal(true)
-  }
-
-  const handleEditAdmin = (admin: Admin) => {
-    setSelectedAdmin(admin)
-    setFormData({
-      name: admin.name,
-      email: admin.email,
-      phone: admin.phone,
-      role: admin.role,
-      status: admin.status,
-    })
-    setShowEditModal(true)
-  }
-
-  const handleDeleteAdmin = (admin: Admin) => {
-    setSelectedAdmin(admin)
-    setShowDeleteModal(true)
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const submitAddAdmin = async () => {
+  const fetchData = async () => {
     try {
-      // In a real app, you would send data to your API
-      // await fetch('/api/super-admin/admins', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${token}`
-      //   },
-      //   body: JSON.stringify(formData)
-      // });
+      const adminsRes = await fetch(
+        "http://127.0.0.1:8000/super_admin/get_admins"
+      );
+      const adminsData: Admin[] = await adminsRes.json();
+      setAdmins(adminsData);
 
-      // Mock implementation
-      const newAdmin: Admin = {
-        id: Date.now().toString(),
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        role: formData.role as "admin" | "senior_admin",
-        status: formData.status as "active" | "inactive",
-        dateAdded: new Date().toISOString().split("T")[0],
-        transactions: 0,
-        successRate: 0,
+      const locationsRes = await fetch(
+        "http://127.0.0.1:8000/super_admin/location"
+      );
+      const locationsData: Location[] = await locationsRes.json();
+      setLocations(locationsData);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Fetch Error:", error);
+      toast.error("Failed to fetch data");
+      setLoading(false);
+    }
+  };
+
+  const handleAddAdmin = async () => {
+    try {
+      const invitation_code = `INV${newAdmin.phone_no}`;
+
+      const formData = new FormData();
+      formData.append("name", newAdmin.name);
+      formData.append("phone_no", newAdmin.phone_no);
+      formData.append("password", newAdmin.password);
+      formData.append("admin_type", newAdmin.admin_type);
+      formData.append("invitation_code", invitation_code);
+
+      // Append area_codes as a JSON string, or as individual items if your backend expects it that way
+      formData.append("area_codes", JSON.stringify(newAdmin.area_codes));
+
+      if (newAdmin.id_front) {
+        formData.append("id_front", newAdmin.id_front);
+      }
+      if (newAdmin.id_back) {
+        formData.append("id_back", newAdmin.id_back);
       }
 
-      setAdmins([...admins, newAdmin])
-      setShowAddModal(false)
-    } catch (error) {
-      console.error("Error adding admin:", error)
+      // Note: For file uploads with FormData, you typically do NOT set 'Content-Type': 'application/json'
+      const response = await fetch(
+        "http://127.0.0.1:8000/super_admin/add_admin",
+        {
+          method: "POST",
+          body: formData, // Send FormData directly
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add admin");
+      }
+
+      toast.success("Admin added successfully");
+      fetchData();
+      setNewAdmin({
+        name: "",
+        phone_no: "",
+        area_codes: [],
+        id_front: null,
+        id_back: null,
+        admin_type: "admin",
+        password: "",
+      });
+    } catch (error: any) {
+      toast.error(error.message || "Error adding admin");
     }
-  }
+  };
 
-  const submitEditAdmin = async () => {
-    if (!selectedAdmin) return
-
+  const handleAddLocation = async () => {
     try {
-      // In a real app, you would send data to your API
-      // await fetch(`/api/super-admin/admins/${selectedAdmin.id}`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${token}`
-      //   },
-      //   body: JSON.stringify(formData)
-      // });
+      const response = await fetch("/api/locations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newLocation),
+      });
 
-      // Mock implementation
-      setAdmins(
-        admins.map((admin) =>
-          admin.id === selectedAdmin.id
-            ? {
-                ...admin,
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone,
-                role: formData.role as "admin" | "senior_admin",
-                status: formData.status as "active" | "inactive",
-              }
-            : admin,
-        ),
-      )
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add location");
+      }
 
-      setShowEditModal(false)
-      setSelectedAdmin(null)
-    } catch (error) {
-      console.error("Error editing admin:", error)
+      toast.success("Location added successfully");
+      fetchData();
+      setNewLocation({ area_code: "", name: "" });
+    } catch (error: any) {
+      toast.error(error.message || "Error adding location");
     }
-  }
+  };
 
-  const submitDeleteAdmin = async () => {
-    if (!selectedAdmin) return
-
+  const handleDeleteAdmin = async (adminId: number) => {
     try {
-      // In a real app, you would send data to your API
-      // await fetch(`/api/super-admin/admins/${selectedAdmin.id}`, {
-      //   method: 'DELETE',
-      //   headers: {
-      //     'Authorization': `Bearer ${token}`
-      //   }
-      // });
+      const res = await fetch(`/api/admins/${adminId}`, {
+        method: "DELETE",
+      });
 
-      // Mock implementation
-      setAdmins(admins.filter((admin) => admin.id !== selectedAdmin.id))
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete admin");
+      }
 
-      setShowDeleteModal(false)
-      setSelectedAdmin(null)
-    } catch (error) {
-      console.error("Error deleting admin:", error)
+      toast.success("Admin deleted successfully");
+      fetchData();
+    } catch (error: any) {
+      toast.error(error.message || "Error deleting admin");
     }
-  }
+  };
 
   if (loading) {
-    return <div className="text-center py-10">{("loading")}...</div>
+    return <div className="text-center py-10">Loading...</div>;
   }
 
   return (
-    <div>
+    <div className="p-6">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">{("adminManagement")}</h1>
-        <button onClick={handleAddAdmin} className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center">
-          <Plus className="w-5 h-5 mr-2" />
-          {("addAdmin")}
-        </button>
-      </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-3 px-4 text-left">{("name")}</th>
-              <th className="py-3 px-4 text-left">{("email")}</th>
-              <th className="py-3 px-4 text-left">{("phone")}</th>
-              <th className="py-3 px-4 text-left">{("role")}</th>
-              <th className="py-3 px-4 text-left">{("status")}</th>
-              <th className="py-3 px-4 text-left">{("dateAdded")}</th>
-              <th className="py-3 px-4 text-left">{("transactions")}</th>
-              <th className="py-3 px-4 text-left">{("successRate")}</th>
-              <th className="py-3 px-4 text-left">{("actions")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {admins.map((admin) => (
-              <tr key={admin.id} className="border-b hover:bg-gray-50">
-                <td className="py-3 px-4">{admin.name}</td>
-                <td className="py-3 px-4">{admin.email}</td>
-                <td className="py-3 px-4">{admin.phone}</td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      admin.role === "senior_admin" ? "bg-purple-200 text-purple-800" : "bg-blue-200 text-blue-800"
-                    }`}
+        <h1 className="text-3xl font-bold">Admin Management</h1>
+        <div className="space-x-4">
+          {/* Add Admin Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Admin
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-50 rounded-lg p-6 border border-gray-200 shadow-md max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold text-gray-800">
+                  Add New Admin
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={newAdmin.name}
+                    onChange={(e) =>
+                      setNewAdmin({ ...newAdmin, name: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phone_no">Phone Number</Label>
+                  <Input
+                    id="phone_no"
+                    value={newAdmin.phone_no}
+                    onChange={(e) =>
+                      setNewAdmin({ ...newAdmin, phone_no: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={newAdmin.password}
+                    onChange={(e) =>
+                      setNewAdmin({ ...newAdmin, password: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="id_front">ID Front</Label>
+                  <Input
+                    id="id_front"
+                    type="file" // Changed to file input
+                    accept="image/*" // Restrict to image files
+                    onChange={(e) =>
+                      setNewAdmin({
+                        ...newAdmin,
+                        id_front: e.target.files ? e.target.files[0] : null,
+                      })
+                    }
+                  />
+                  {newAdmin.id_front && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      Selected: {newAdmin.id_front.name}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="id_back">ID Back</Label>
+                  <Input
+                    id="id_back"
+                    type="file" // Changed to file input
+                    accept="image/*" // Restrict to image files
+                    onChange={(e) =>
+                      setNewAdmin({
+                        ...newAdmin,
+                        id_back: e.target.files ? e.target.files[0] : null,
+                      })
+                    }
+                  />
+                  {newAdmin.id_back && (
+                    <p className="text-sm text-gray-500 mt-1">
+                      Selected: {newAdmin.id_back.name}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label>Area Codes</Label>
+                  <Select
+                    onValueChange={(value) => {
+                      if (!newAdmin.area_codes.includes(value)) {
+                        setNewAdmin((prev) => ({
+                          ...prev,
+                          area_codes: [...prev.area_codes, value],
+                        }));
+                      }
+                    }}
                   >
-                    {admin.role === "senior_admin" ? ("seniorAdmin") : ("admin")}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      admin.status === "active" ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"
-                    }`}
-                  >
-                    {admin.status === "active" ? ("active") : ("inactive")}
-                  </span>
-                </td>
-                <td className="py-3 px-4">{admin.dateAdded}</td>
-                <td className="py-3 px-4">{admin.transactions}</td>
-                <td className="py-3 px-4">{admin.successRate}%</td>
-                <td className="py-3 px-4">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEditAdmin(admin)}
-                      className="p-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                      title={("edit")}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAdmin(admin)}
-                      className="p-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
-                      title={("delete")}
-                    >
-                      <Trash className="w-4 h-4" />
-                    </button>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select area codes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locations.map((loc) => (
+                        <SelectItem key={loc.area_code} value={loc.area_code}>
+                          {loc.name} ({loc.area_code})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="mt-2 text-sm text-gray-600">
+                    Selected:{" "}
+                    {newAdmin.area_codes.length > 0
+                      ? newAdmin.area_codes
+                          .map((code) => {
+                            const found = locations.find(
+                              (loc) => loc.area_code === code
+                            );
+                            return found ? found.name : code;
+                          })
+                          .join(", ")
+                      : "None"}
+                    {newAdmin.area_codes.length > 0 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setNewAdmin({ ...newAdmin, area_codes: [] })
+                        }
+                        className="ml-2 text-red-500 hover:text-red-700"
+                      >
+                        Clear All
+                      </Button>
+                    )}
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+                <Button onClick={handleAddAdmin} className="w-full">
+                  Add Admin
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Add Location Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Location
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-50 rounded-lg p-6 border border-gray-200 shadow-md max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-semibold text-gray-800">
+                  Add New Location
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="area_code">Area Code</Label>
+                  <Input
+                    id="area_code"
+                    value={newLocation.area_code}
+                    onChange={(e) =>
+                      setNewLocation({
+                        ...newLocation,
+                        area_code: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="location_name">Location Name</Label>
+                  <Input
+                    id="location_name"
+                    value={newLocation.name}
+                    onChange={(e) =>
+                      setNewLocation({ ...newLocation, name: e.target.value })
+                    }
+                  />
+                </div>
+                <Button onClick={handleAddLocation} className="w-full">
+                  Add Location
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
-      {/* Add Admin Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">{("addAdmin")}</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("name")}</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("email")}</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("phone")}</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("role")}</label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="admin">{("admin")}</option>
-                  <option value="senior_admin">{("seniorAdmin")}</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("status")}</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="active">{("active")}</option>
-                  <option value="inactive">{("inactive")}</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2 mt-6">
-              <button onClick={() => setShowAddModal(false)} className="px-4 py-2 border rounded hover:bg-gray-100">
-                {("cancel")}
-              </button>
-              <button onClick={submitAddAdmin} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                {("add")}
-              </button>
-            </div>
-          </div>
+      {/* Admin List Table */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold mb-4">Admin List</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="text-left bg-gray-100 text-sm">
+                <th className="p-2">Name</th>
+                <th className="p-2">Phone No</th>
+                <th className="p-2">Area Codes</th>
+                <th className="p-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {admins.map((admin) => (
+                <tr key={admin.admin_id} className="border-b hover:bg-gray-50">
+                  <td className="p-2">{admin.name}</td>
+                  <td className="p-2">{admin.phone_no}</td>
+                  <td className="p-2">{admin.area_codes.join(", ")}</td>
+                  <td className="p-2">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteAdmin(admin.admin_id)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+              {admins.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="text-center py-4 text-gray-500">
+                    No admins available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
-
-      {/* Edit Admin Modal */}
-      {showEditModal && selectedAdmin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">{("editAdmin")}</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("name")}</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("email")}</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("phone")}</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("role")}</label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="admin">{("admin")}</option>
-                  <option value="senior_admin">{("seniorAdmin")}</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">{("status")}</label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                >
-                  <option value="active">{("active")}</option>
-                  <option value="inactive">{("inactive")}</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex justify-end space-x-2 mt-6">
-              <button onClick={() => setShowEditModal(false)} className="px-4 py-2 border rounded hover:bg-gray-100">
-                {("cancel")}
-              </button>
-              <button onClick={submitEditAdmin} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                {("save")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Admin Modal */}
-      {showDeleteModal && selectedAdmin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-xl font-semibold mb-4">{("deleteAdmin")}</h2>
-            <p className="mb-4">
-              {("deleteAdminConfirmation")} <strong>{selectedAdmin.name}</strong>?
-            </p>
-            <div className="flex justify-end space-x-2">
-              <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 border rounded hover:bg-gray-100">
-                {("cancel")}
-              </button>
-              <button onClick={submitDeleteAdmin} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                {("delete")}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
-  )
+  );
 }
-

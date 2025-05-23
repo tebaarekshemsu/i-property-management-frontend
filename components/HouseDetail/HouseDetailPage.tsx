@@ -7,31 +7,35 @@ import { VisitRequestForm } from "./VisitRequestForm";
 import { jwtDecode } from "jwt-decode";
 import Paths from "@/lib/path";
 import Footer from "@/components/reusable/Footer";
-import { API_ENDPOINTS } from "@/config/api";
-import { api } from "@/utils/api";
+import { API_ENDPOINTS, API_BASE_URL } from "@/config/api";
+import { api } from "@/config/api";
+import axios from "axios";
 
 interface DecodedToken {
   role?: string;
 }
 
 interface HouseData {
-  name: string;
-  image_urls: string[];
+  house_id: number;
   category: string;
   location: string;
   address: string;
-  size: string;
+  size: number;
+  toilets: number;
   condition: string;
-  bedroom: string;
-  toilet: string;
-  bathroom: string;
+  bedroom: number;
+  facility: string;
   property_type: string;
   furnish_status: string;
-  parking_space: boolean;
-  price: number;
   negotiability: string;
-  facilities: string[];
+  bathroom: number;
+  price: number;
+  status: string;
+  image_urls: string[];
   description: string;
+  parking_space: boolean;
+  listed_by: string;
+  video: string | null;
 }
 
 export function HouseDetailPage() {
@@ -45,30 +49,46 @@ export function HouseDetailPage() {
   useEffect(() => {
     const fetchHouseDetail = async () => {
       try {
-        const { data, error } = await api.get<HouseData[]>(
-          API_ENDPOINTS.USER.HOUSE_DETAIL(house_id.id as string),
-          {
-            cacheConfig: {
-              key: `house-${house_id.id}`,
-              ttl: 5 * 60 * 1000, // Cache for 5 minutes
-              refresh: false // Set to true to force refresh
-            }
-          }
-        );
+        console.log('Fetching house details for ID:', house_id.id);
+        const endpoint = API_ENDPOINTS.PROPERTY_DETAILS(house_id.id as string);
+        console.log('API Endpoint:', endpoint);
+        
+        const response = await api.get<[HouseData, number]>(endpoint);
+        console.log('API Response:', response);
 
-        if (error) {
-          console.error("Error fetching house details:", error);
-          return;
+        if (response.data && Array.isArray(response.data) && response.data[0]) {
+          const houseData = response.data[0];
+          console.log('Parsed house data:', houseData);
+          
+          // Parse facility string to array if it's a string
+          const parsedFacilities = typeof houseData.facility === 'string' 
+            ? JSON.parse(houseData.facility || '[]')
+            : houseData.facility;
+          
+          setHouseData({
+            ...houseData,
+            facility: parsedFacilities
+          });
+        } else {
+          console.error("Invalid response format:", response.data);
+          setHouseData(defaultValues);
         }
-
-        const house = Array.isArray(data) ? data[0] : defaultValues;
-        setHouseData(house);
       } catch (error) {
         console.error("Error fetching house details:", error);
+        if (axios.isAxiosError(error)) {
+          console.error("Request failed with status:", error.response?.status);
+          console.error("Error message:", error.message);
+          console.error("Response data:", error.response?.data);
+        }
+        setHouseData(defaultValues);
       }
     };
 
-    fetchHouseDetail();
+    if (house_id?.id) {
+      fetchHouseDetail();
+    } else {
+      console.error("No house ID provided");
+    }
 
     // Check authentication status on component mount
     const token = localStorage.getItem("token");
@@ -117,57 +137,65 @@ export function HouseDetailPage() {
     };
 
     try {
-      const { error } = await api.post(
-        API_ENDPOINTS.USER.VISIT_REQUEST,
+      console.log('Submitting visit request:', requestData);
+      const response = await api.post(
+        `${API_ENDPOINTS.USERS}/visite-request`,
         requestData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          },
-          revalidate: {
-            path: `/user/house/${house_id.id}`,
-            tag: `house-${house_id.id}`
+            'Content-Type': 'application/json'
           }
         }
       );
 
-      if (error) {
-        console.error("Error submitting visit request:", error);
-        return;
+      console.log('Visit request response:', response);
+      if (response.data) {
+        setShowVisitForm(false);
+        // You might want to show a success message here
+      } else {
+        console.error("Error submitting visit request: No data in response");
       }
-
-      setShowVisitForm(false);
     } catch (error) {
       console.error("Network error:", error);
+      if (axios.isAxiosError(error)) {
+        console.error("Request failed with status:", error.response?.status);
+        console.error("Error message:", error.message);
+        console.error("Response data:", error.response?.data);
+      }
+      // You might want to show an error message to the user here
     }
+  };
+
+  // Default values
+  const defaultValues: HouseData = {
+    house_id: parseInt(house_id.id as string) || 0,
+    category: "Unknown",
+    location: "Unknown",
+    address: "Unknown",
+    size: 0,
+    toilets: 0,
+    condition: "Unknown",
+    bedroom: 0,
+    facility: "[]",
+    property_type: "Unknown",
+    furnish_status: "Unknown",
+    negotiability: "Unknown",
+    bathroom: 0,
+    price: 0,
+    status: "Unknown",
+    image_urls: [
+      "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
+    ],
+    description: "No description available",
+    parking_space: false,
+    listed_by: "Unknown",
+    video: null
   };
 
   if (!houseData) {
     return <div>Loading...</div>;
   }
-
-  // Default values
-  const defaultValues: HouseData = {
-    name: `${house_id.id}`,
-    image_urls: [
-      "https://filesblog.technavio.org/wp-content/webp-express/webp-images/uploads/2018/12/Online-House-Rental-Sites-672x372.jpg.webp",
-    ],
-    category: "Unknown",
-    location: "Unknown",
-    address: "Unknown",
-    size: "N/A",
-    condition: "Unknown",
-    bedroom: "N/A",
-    toilet: "N/A",
-    bathroom: "N/A",
-    property_type: "Unknown",
-    furnish_status: "Unknown",
-    parking_space: false,
-    price: 0,
-    negotiability: "Unknown",
-    facilities: ["N/A"],
-    description: "No description available",
-  };
 
   // Merge incoming data with default values
   const mergedData = { ...defaultValues, ...houseData };
@@ -181,7 +209,7 @@ export function HouseDetailPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-4">{mergedData.name}</h1>
+        <h1 className="text-3xl font-bold mb-4">Property {mergedData.house_id}</h1>
         <PhotoGallery photos={photos} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
@@ -206,7 +234,7 @@ export function HouseDetailPage() {
                 <strong>Bedrooms:</strong> {mergedData.bedroom}
               </li>
               <li>
-                <strong>Toilets:</strong> {mergedData.toilet}
+                <strong>Toilets:</strong> {mergedData.toilets}
               </li>
               <li>
                 <strong>Bathrooms:</strong> {mergedData.bathroom}
@@ -221,58 +249,57 @@ export function HouseDetailPage() {
                 <strong>Parking Space:</strong>{" "}
                 {mergedData.parking_space ? "Yes" : "No"}
               </li>
+              <li>
+                <strong>Listed By:</strong> {mergedData.listed_by}
+              </li>
+              <li>
+                <strong>Status:</strong> {mergedData.status}
+              </li>
             </ul>
           </div>
           <div>
-            <h2 className="text-2xl font-semibold mb-4">
-              Additional Information
-            </h2>
-            <ul className="space-y-2">
-              <li>
-                <strong>Price:</strong> {mergedData.price.toLocaleString()} ETB{" "}
-                {mergedData.category === "rent" ? "/ month" : ""}
-              </li>
-              <li>
-                <strong>Negotiability:</strong> {mergedData.negotiability}
-              </li>
-              <li>
-                <strong>Facilities:</strong> {mergedData.facilities.join(", ")}
-              </li>
-            </ul>
-            <h3 className="text-xl font-semibold mt-6 mb-2">Description</h3>
-            <p>{mergedData.description}</p>
-            {isAuthenticatedUser ? (
+            <h2 className="text-2xl font-semibold mb-4">Price & Description</h2>
+            <div className="mb-6">
+              <p className="text-2xl font-bold text-blue-600">
+                ${mergedData.price.toLocaleString()}
+              </p>
+              <p className="text-gray-600">
+                Negotiability: {mergedData.negotiability}
+              </p>
+            </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Description</h3>
+              <p className="text-gray-700">{mergedData.description}</p>
+            </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Facilities</h3>
+              <ul className="list-disc list-inside text-gray-700">
+                {Array.isArray(mergedData.facility) 
+                  ? mergedData.facility.map((facility, index) => (
+                      <li key={index}>{facility}</li>
+                    ))
+                  : <li>No facilities listed</li>
+                }
+              </ul>
+            </div>
+            {isAuthenticatedUser && (
               <button
                 onClick={handleRequestVisitClick}
-                className="mt-8 px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
               >
-                Request to Visit
-              </button>
-            ) : (
-              <button
-                onClick={() => {
-                  localStorage.setItem(
-                    "redirectAfterLogin",
-                    window.location.pathname
-                  );
-                  router.push(authPath);
-                }}
-                className="mt-8 px-6 py-3 bg-gray-400 text-white rounded-md cursor-pointer"
-              >
-                Login to Request Visit
+                Request Visit
               </button>
             )}
           </div>
         </div>
+        {showVisitForm && (
+          <VisitRequestForm
+            onSubmit={handleVisitRequestSubmit}
+            onClose={() => setShowVisitForm(false)}
+            houseId={house_id.id as string}
+          />
+        )}
       </main>
-      {showVisitForm && (
-        <VisitRequestForm
-          onClose={() => setShowVisitForm(false)}
-          houseId={house_id.id as string}
-          onSubmit={handleVisitRequestSubmit}
-        />
-      )}
-
       <Footer />
     </div>
   );

@@ -10,6 +10,7 @@ interface FormInputProps {
   required?: boolean;
   placeholder?: string;
   autoComplete?: string;
+  disabled?: boolean;
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -22,6 +23,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   required = false,
   placeholder,
   autoComplete,
+  disabled = false,
 }) => {
   return (
     <div>
@@ -39,7 +41,8 @@ export const FormInput: React.FC<FormInputProps> = ({
         value={value}
         onChange={onChange}
         autoComplete={autoComplete}
-        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+        disabled={disabled}
+        className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         placeholder={placeholder}
       />
     </div>

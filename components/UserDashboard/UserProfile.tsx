@@ -10,7 +10,6 @@ interface UserProfile {
   name: string;
   invitation_code: string;
   phone_no: string;
-  address: string;
 }
 
 export function UserProfile() {
@@ -18,7 +17,6 @@ export function UserProfile() {
     name: "",
     invitation_code: "",
     phone_no: "",
-    address: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -34,7 +32,7 @@ export function UserProfile() {
 
     const fetchUserData = async () => {
       try {
-        const { data, error } = await api.get<UserProfile>(API_ENDPOINTS.USER.PROFILE, {
+        const { data, error } = await api.get<UserProfile>(API_ENDPOINTS.USER_PROFILE, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,7 +60,7 @@ export function UserProfile() {
 
     try {
       const { data, error } = await api.put<UserProfile>(
-        API_ENDPOINTS.USER.PROFILE,
+        API_ENDPOINTS.USER_PROFILE,
         user,
         {
           headers: {
@@ -121,10 +119,8 @@ export function UserProfile() {
               type="text"
               id="invitation_code"
               value={user.invitation_code}
-              onChange={(e) =>
-                setUser({ ...user, invitation_code: e.target.value })
-              }
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+              disabled
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100"
             />
           </div>
           <div>
@@ -142,21 +138,7 @@ export function UserProfile() {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
             />
           </div>
-          <div>
-            <label
-              htmlFor="address"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Address
-            </label>
-            <input
-              type="text"
-              id="address"
-              value={user.address}
-              onChange={(e) => setUser({ ...user, address: e.target.value })}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-            />
-          </div>
+          
           <div>
             <button
               type="submit"
@@ -177,9 +159,7 @@ export function UserProfile() {
           <p>
             <strong>Phone:</strong> {user.phone_no}
           </p>
-          <p>
-            <strong>Address:</strong> {user.address}
-          </p>
+         
           <button
             onClick={() => setIsEditing(true)}
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

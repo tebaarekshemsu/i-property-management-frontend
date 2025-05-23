@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+export const API_BASE_URL =  'http://127.0.0.1:8000';
 
 export const API_ENDPOINTS = {
   // Auth endpoints
@@ -18,8 +18,12 @@ export const API_ENDPOINTS = {
   LOCATIONS: `${API_BASE_URL}/user/locations`,
   
   // Property endpoints
-  PROPERTIES: `${API_BASE_URL}/properties`,
-  PROPERTY_DETAILS: (id: string) => `${API_BASE_URL}/properties/${id}`,
+  PROPERTIES: `${API_BASE_URL}/user/house-list`,
+  VIP_HOUSES: `${API_BASE_URL}/user/vip-houses`,
+  PROPERTY_DETAILS: (id: string) => `${API_BASE_URL}/user/house/${id}`,
+  
+  // Visit request endpoints
+  VISIT_REQUESTS: `${API_BASE_URL}/user/visite-request`,
   
   // Report endpoints
   REPORTS: `${API_BASE_URL}/reports`,
